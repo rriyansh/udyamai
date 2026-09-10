@@ -13,12 +13,12 @@ import { RiskBadge } from "@/components/ui/RiskBadge";
 import { useFinanceApi } from "@/lib/api-client";
 import { DEMO_BADGE, formatINR } from "@/lib/demo-data";
 import { computeFinancialPlan } from "@/lib/finance-engine";
+import { SIH_WHAT_IF_RULE } from "@/lib/financial-rules";
 import { useOnboardingStore } from "@/lib/onboarding-store";
 import type {
   FeasibilityScore,
   FinanceInput,
   RiskLevel,
-  SchemeRule,
   WhatIfScenario,
 } from "@/lib/types";
 import {
@@ -102,18 +102,6 @@ const PRESETS: { key: string; state: SliderState }[] = [
 
 const BALANCED = PRESETS[1].state;
 
-/** A neutral scheme rule so the engine prices the loan at the user's own rate. */
-const DEFAULT_SCHEME_RULE: SchemeRule = {
-  name: "What-if model",
-  minProjectCost: 0,
-  maxProjectCost: 10000000,
-  loanPercent: 100,
-  beneficiaryContributionPercent: 0,
-  interestRatePercent: 0,
-  tenureMonths: 0,
-  moratoriumMonths: 0,
-};
-
 function clamp(value: number): number {
   return Math.max(0, Math.min(100, value));
 }
@@ -194,7 +182,7 @@ function computeScenario(
   id: string,
   label: string,
 ): WhatIfScenario {
-  const plan = computeFinancialPlan(buildFinanceInput(s), DEFAULT_SCHEME_RULE);
+  const plan = computeFinancialPlan(buildFinanceInput(s), SIH_WHAT_IF_RULE);
   const revenue = s.price * s.salesVolume;
   const profit = revenue - s.operatingCost;
   return {
@@ -369,7 +357,7 @@ export default function WhatIfPage() {
     const initial = initialRef.current;
     if (!initial) return;
     financeApiRef.current
-      .computeFinancialPlan(buildFinanceInput(initial), DEFAULT_SCHEME_RULE)
+      .computeFinancialPlan(buildFinanceInput(initial), SIH_WHAT_IF_RULE)
       .then((res) => {
         if (active) setCurrentSource(res.source);
       })
@@ -382,7 +370,7 @@ export default function WhatIfPage() {
   }, []);
 
   const plan = useMemo(
-    () => computeFinancialPlan(buildFinanceInput(sliders), DEFAULT_SCHEME_RULE),
+    () => computeFinancialPlan(buildFinanceInput(sliders), SIH_WHAT_IF_RULE),
     [sliders],
   );
 

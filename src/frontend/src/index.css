@@ -23,8 +23,8 @@
 @layer base {
   :root {
     --font-display: "Comic Relief", "Space Grotesk", sans-serif;
-    --font-body: "General Sans", sans-serif;
-    --font-mono: "Geist Mono", monospace;
+    --font-body: "Comic Relief", sans-serif;
+    --font-mono: "Comic Relief", sans-serif;
     --radius: 0.75rem;
 
     --background: 0.985 0.012 105;

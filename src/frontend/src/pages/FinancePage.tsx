@@ -26,12 +26,12 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useFinancialPlan } from "@/hooks/useQueries";
 import { formatINR } from "@/lib/demo-data";
 import { computeFinancialPlan } from "@/lib/finance-engine";
+import { SIH_FINANCIAL_RULES } from "@/lib/financial-rules";
 import type {
   FeasibilityScore,
   FinanceInput,
   FinancialPlan,
   OperatingCosts,
-  SchemeRule,
 } from "@/lib/types";
 import {
   AlertTriangle,
@@ -51,41 +51,8 @@ import {
 import { useEffect, useMemo, useState } from "react";
 
 /* ------------------------------------------------------------------ */
-/* Scheme financing-term presets (deterministic, scheme-specific)     */
+/* SIH PS-26091 financial rules. Government schemes are routed separately. */
 /* ------------------------------------------------------------------ */
-
-const SCHEME_RULES: SchemeRule[] = [
-  {
-    name: "Micro Enterprise",
-    minProjectCost: 100000,
-    maxProjectCost: 1000000,
-    loanPercent: 75,
-    beneficiaryContributionPercent: 10,
-    interestRatePercent: 11,
-    tenureMonths: 60,
-    moratoriumMonths: 6,
-  },
-  {
-    name: "Small Enterprise",
-    minProjectCost: 1000000,
-    maxProjectCost: 2500000,
-    loanPercent: 70,
-    beneficiaryContributionPercent: 15,
-    interestRatePercent: 10,
-    tenureMonths: 84,
-    moratoriumMonths: 12,
-  },
-  {
-    name: "Agri Business",
-    minProjectCost: 50000,
-    maxProjectCost: 500000,
-    loanPercent: 80,
-    beneficiaryContributionPercent: 10,
-    interestRatePercent: 9,
-    tenureMonths: 60,
-    moratoriumMonths: 6,
-  },
-];
 
 const DEFAULT_INPUT: FinanceInput = {
   proposedProjectCost: 1500000,
@@ -212,7 +179,7 @@ function FinanceSkeleton() {
 
 export default function FinancePage() {
   const [input, setInput] = useState<FinanceInput>(DEFAULT_INPUT);
-  const [rule, setRule] = useState<SchemeRule>(SCHEME_RULES[0]);
+  const [rule, setRule] = useState(SIH_FINANCIAL_RULES[0]);
   const [status, setStatus] = useState<"loading" | "ready" | "error">(
     "loading",
   );
@@ -223,10 +190,10 @@ export default function FinancePage() {
     setStatus("ready");
   }, []);
 
-  const { data: planResult } = useFinancialPlan(input, rule);
+  const { data: planResult } = useFinancialPlan(input, rule.rule);
 
   const plan = useMemo(
-    () => planResult?.data ?? computeFinancialPlan(input, rule),
+    () => planResult?.data ?? computeFinancialPlan(input, rule.rule),
     [planResult, input, rule],
   );
   const source = planResult?.source ?? "demo";
@@ -375,12 +342,12 @@ export default function FinancePage() {
         <CardContent className="space-y-6">
           <div className="flex flex-col gap-3">
             <p className="text-sm font-medium text-foreground">
-              Scheme financing terms
+              SIH PS-26091 financial model
             </p>
             <Select
-              value={rule.name}
-              onValueChange={(name) => {
-                const next = SCHEME_RULES.find((r) => r.name === name);
+              value={rule.id}
+              onValueChange={(id) => {
+                const next = SIH_FINANCIAL_RULES.find((r) => r.id === id);
                 if (next) setRule(next);
               }}
             >
@@ -389,20 +356,22 @@ export default function FinancePage() {
                 aria-label="Scheme financing terms"
                 data-ocid="scheme_rule_select"
               >
-                <SelectValue placeholder="Select a scheme" />
+                <SelectValue placeholder="Select a SIH financial model" />
               </SelectTrigger>
               <SelectContent>
-                {SCHEME_RULES.map((r) => (
-                  <SelectItem key={r.name} value={r.name}>
+                {SIH_FINANCIAL_RULES.map((r) => (
+                  <SelectItem key={r.id} value={r.id}>
                     {r.name}
                   </SelectItem>
                 ))}
               </SelectContent>
             </Select>
             <p className="text-xs text-muted-foreground">
-              {rule.name}: up to {rule.loanPercent}% loan,{" "}
-              {rule.interestRatePercent}% interest, {rule.tenureMonths} months,{" "}
-              {rule.moratoriumMonths} month moratorium.
+              {rule.sourceLabel}: up to {rule.rule.loanPercent}% loan,{" "}
+              {rule.rule.interestRatePercent}% interest,{" "}
+              {rule.rule.tenureMonths} months, {rule.rule.moratoriumMonths}{" "}
+              month moratorium. These are challenge-model assumptions, not PMEGP
+              or other government scheme terms.
             </p>
           </div>
 
