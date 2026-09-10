@@ -1,3 +1,6 @@
-Drop the final UdyamAI logo here as `udyamai-logo.png` (or `udyamai-logo.svg`).
+The current UdyamAI logo is `udyamai-logo.jpg`.
 
-The app looks for `/assets/images/udyamai-logo.png` first and keeps its icon fallback until the image is added.
+To replace it later, keep the filename `udyamai-logo.jpg` or update
+`src/frontend/src/components/BrandMark.tsx` if you use another format.
+
+The app loads `/assets/images/udyamai-logo.jpg` and keeps its icon fallback if the image cannot load.

@@ -9,7 +9,7 @@ export function BrandMark({ className = "size-9" }: { className?: string }) {
     >
       {!imageFailed ? (
         <img
-          src="/assets/images/udyamai-logo.png"
+          src="/assets/images/udyamai-logo.jpg"
           alt="UdyamAI logo"
           className="relative size-full object-contain p-1"
           onError={() => setImageFailed(true)}
