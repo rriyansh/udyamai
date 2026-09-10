@@ -4,7 +4,9 @@ interface OpenAiResponse {
   choices?: Array<{ message?: { content?: string } }>;
 }
 
-const proxyUrl = import.meta.env.VITE_OPENAI_PROXY_URL as string | undefined;
+const proxyUrl =
+  (import.meta.env.VITE_OPENAI_PROXY_URL as string | undefined) ??
+  (import.meta.env.DEV ? "http://localhost:8787/api/chat" : undefined);
 
 /**
  * Calls a server-side OpenAI-compatible proxy. API keys must stay on that

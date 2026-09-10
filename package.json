@@ -13,6 +13,7 @@
     "fix": "pnpm -r --if-present run fix",
     "test": "pnpm --dir src/frontend test && pnpm run test:backend",
     "test:backend": "node test/pocketic/run-backend-lane.mjs",
+    "ai:proxy": "node --env-file-if-exists=.env server/openai-proxy.mjs",
     "bindgen": "caffeine-bindgen --did-file ./src/backend/dist/backend.did --out-dir ./src/frontend/src --actor-interface-file --force"
   },
   "devDependencies": {
