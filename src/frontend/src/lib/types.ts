@@ -296,6 +296,17 @@ export interface HyperLocalAnalysis {
 
 export type ChatRole = "user" | "assistant";
 
+/**
+ * Ask UdyamAI conversational persona. Each id mirrors a website section so
+ * the assistant answers in character for the area the user is asking about.
+ */
+export type ChatPersonaId =
+  | "saathi"
+  | "market"
+  | "finance"
+  | "schemes"
+  | "mentor";
+
 export interface ChatMessage {
   role: ChatRole;
   content: string;
@@ -305,6 +316,7 @@ export interface ChatRequest {
   analysisId: string;
   message: string;
   history: ChatMessage[];
+  persona?: ChatPersonaId;
 }
 
 export interface ChatResponse {

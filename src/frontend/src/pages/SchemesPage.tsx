@@ -6,6 +6,7 @@ import { Modal } from "@/components/ui/Modal";
 import { useToast } from "@/components/ui/Toast";
 import { useRouteSchemes } from "@/hooks/useQueries";
 import { BUSINESS_CATEGORIES, formatINR } from "@/lib/demo-data";
+import { useResultsStore } from "@/lib/results-store";
 import type {
   GovernmentScheme,
   SchemeMatch,
@@ -28,7 +29,7 @@ import {
   Sparkles,
   Wallet,
 } from "lucide-react";
-import { type FormEvent, useMemo, useState } from "react";
+import { type FormEvent, useEffect, useMemo, useState } from "react";
 
 /* ------------------------------------------------------------------ */
 /* Deterministic client-side scheme routing fallback                   */
@@ -275,6 +276,10 @@ export default function SchemesPage() {
     if (!input) return null;
     return routeQuery.data?.data ?? routeClientSide(input);
   }, [input, routeQuery.data]);
+
+  useEffect(() => {
+    if (result) useResultsStore.getState().setSchemeRouting(result);
+  }, [result]);
 
   const source = routeQuery.data?.source ?? "demo";
 

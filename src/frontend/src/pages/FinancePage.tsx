@@ -27,6 +27,7 @@ import { useFinancialPlan } from "@/hooks/useQueries";
 import { formatINR } from "@/lib/demo-data";
 import { computeFinancialPlan } from "@/lib/finance-engine";
 import { SIH_FINANCIAL_RULES } from "@/lib/financial-rules";
+import { useResultsStore } from "@/lib/results-store";
 import type {
   FeasibilityScore,
   FinanceInput,
@@ -197,6 +198,10 @@ export default function FinancePage() {
     [planResult, input, rule],
   );
   const source = planResult?.source ?? "demo";
+
+  useEffect(() => {
+    useResultsStore.getState().setFinancialPlan(plan);
+  }, [plan]);
 
   const feasibility = useMemo(
     () => computeFeasibility(plan, input),

@@ -161,6 +161,16 @@ export function getCurrentLocation(): Promise<MapServiceResult> {
       resolve({ location: null, error: "Geolocation is not supported" });
       return;
     }
+    // Browsers only expose geolocation on secure origins (https/localhost).
+    // Without this check, the permission prompt silently never appears and
+    // the failure gets misreported as "permission denied".
+    if (typeof window !== "undefined" && window.isSecureContext === false) {
+      resolve({
+        location: null,
+        error: "Location access requires a secure (https) connection",
+      });
+      return;
+    }
     navigator.geolocation.getCurrentPosition(
       (position) => {
         resolve({
@@ -171,10 +181,18 @@ export function getCurrentLocation(): Promise<MapServiceResult> {
           error: null,
         });
       },
-      () => {
-        resolve({ location: null, error: "Location permission denied" });
+      (error) => {
+        const messages: Record<number, string> = {
+          1: "Location permission denied — enable it in your browser's site settings",
+          2: "Your device could not determine its location right now",
+          3: "Location request timed out — please try again",
+        };
+        resolve({
+          location: null,
+          error: messages[error.code] ?? "Location unavailable",
+        });
       },
-      { timeout: 8000, maximumAge: 60000 },
+      { timeout: 10000, maximumAge: 60000 },
     );
   });
 }

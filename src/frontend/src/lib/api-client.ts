@@ -8,7 +8,12 @@ import {
   computeFinancialPlan as engineComputeFinancialPlan,
   computeFinancing as engineComputeFinancing,
 } from "@/lib/finance-engine";
-import { askOpenAI } from "@/lib/openai-service";
+import {
+  type ChatContext,
+  askOpenAI,
+  askOpenAIStream,
+} from "@/lib/openai-service";
+import { useResultsStore } from "@/lib/results-store";
 import type {
   Amortization,
   AnalysisInput,
@@ -61,7 +66,7 @@ import { useActor } from "@caffeineai/core-infrastructure";
  */
 
 export type DataSource = "backend" | "demo";
-export type ChatSource = "backend" | "openai" | "demo";
+export type ChatSource = "backend" | "openai" | "stream" | "demo";
 
 export interface AnalysisRunResult {
   analysis: HyperLocalAnalysis;
@@ -844,13 +849,40 @@ export function useAnalysisApi() {
   async function chat(
     request: ChatRequest,
     analysis: HyperLocalAnalysis | null,
+    onToken?: (token: string) => void,
   ): Promise<ChatRunResult> {
     if (analysis) {
+      const { financialPlan, schemeRouting } = useResultsStore.getState();
+      const context: ChatContext = {
+        analysis,
+        financeContext:
+          financialPlan || schemeRouting
+            ? { financialPlan, schemeRouting }
+            : undefined,
+        persona: request.persona,
+      };
+
+      // Real-time: stream tokens straight from the proxy when the caller
+      // supplied a token sink and the proxy is reachable.
+      if (onToken) {
+        try {
+          const streamed = await askOpenAIStream(
+            request.message,
+            request.history,
+            context,
+            onToken,
+          );
+          if (streamed) return { reply: streamed, source: "stream" };
+        } catch {
+          // fall through to the non-streaming path
+        }
+      }
+
       try {
         const reply = await askOpenAI(
           request.message,
           request.history,
-          analysis,
+          context,
         );
         if (reply) return { reply, source: "openai" };
       } catch {
