@@ -9,6 +9,12 @@ import { VoiceButton } from "@/components/ui/VoiceButton";
 import { VoiceInput } from "@/components/ui/VoiceInput";
 import { WhyButton } from "@/components/ui/WhyButton";
 import { BUSINESS_CATEGORIES } from "@/lib/demo-data";
+import {
+  getCurrentLocation,
+  hasGoogleMapsKey,
+  loadGoogleMaps,
+  reverseGeocode,
+} from "@/lib/map-service";
 import { useOnboardingStore } from "@/lib/onboarding-store";
 import type {
   BusinessCategoryId,
@@ -22,6 +28,7 @@ import {
   ArrowLeft,
   ArrowRight,
   Check,
+  Compass,
   Keyboard,
   MapPin,
   Mic,
@@ -595,6 +602,7 @@ function NumberField({
 type ConfirmState =
   | { type: "single"; entry: LocationEntry }
   | { type: "multiple"; matches: LocationEntry[] }
+  | { type: "detected"; entry: LocationEntry }
   | null;
 
 export default function OnboardingPage() {
@@ -614,6 +622,8 @@ export default function OnboardingPage() {
   const [dismissedLocationSuggestion, setDismissedLocationSuggestion] =
     useState("");
   const [voiceLanguage, setVoiceLanguage] = useState<VoiceLanguage>("en-IN");
+  const [detecting, setDetecting] = useState(false);
+  const [detectError, setDetectError] = useState<string | null>(null);
 
   const activeSteps = useMemo(
     () =>
@@ -672,6 +682,42 @@ export default function OnboardingPage() {
     setValue("district", entry.district);
     setValue("state", entry.state);
     setConfirm(null);
+  };
+
+  const handleDetectLocation = async () => {
+    setDetecting(true);
+    setDetectError(null);
+    const result = await getCurrentLocation();
+    if (!result.location) {
+      setDetectError(result.error ?? "Location unavailable");
+      setDetecting(false);
+      return;
+    }
+    if (!hasGoogleMapsKey()) {
+      setDetectError(
+        "Location detected, but automatic address lookup needs Google Maps to be configured. Please select your village manually.",
+      );
+      setDetecting(false);
+      return;
+    }
+    const api = await loadGoogleMaps();
+    const address = api ? await reverseGeocode(api, result.location) : null;
+    setDetecting(false);
+    if (!address?.village) {
+      setDetectError(
+        "We couldn't match your location to a village automatically. Please select it manually.",
+      );
+      return;
+    }
+    setConfirm({
+      type: "detected",
+      entry: {
+        village: address.village,
+        block: address.block ?? "",
+        district: address.district ?? "",
+        state: address.state ?? "",
+      },
+    });
   };
 
   const validate = (): boolean => {
@@ -873,6 +919,31 @@ export default function OnboardingPage() {
     if (step.kind === "location") {
       return (
         <div className="flex flex-col gap-1.5">
+          {step.key === "village" ? (
+            <div className="flex flex-col gap-2">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => void handleDetectLocation()}
+                disabled={detecting}
+                className="w-full justify-center sm:w-auto"
+                data-ocid="detect_location_button"
+              >
+                <Compass className="size-4" aria-hidden />
+                {detecting
+                  ? "Detecting your location\u2026"
+                  : "Use my current location"}
+              </Button>
+              {detectError ? (
+                <p
+                  className="text-xs text-muted-foreground"
+                  data-ocid="detect_location_error"
+                >
+                  {detectError}
+                </p>
+              ) : null}
+            </div>
+          ) : null}
           <div className="relative">
             <VoiceInput
               value={getValue(step.key)}
@@ -1101,10 +1172,18 @@ export default function OnboardingPage() {
       <Modal
         open={confirm !== null}
         onClose={() => setConfirm(null)}
-        title="Confirm your location"
-        description="Please confirm the location you selected."
+        title={
+          confirm?.type === "detected"
+            ? "We detected your location"
+            : "Confirm your location"
+        }
+        description={
+          confirm?.type === "detected"
+            ? "Review the auto-filled details below."
+            : "Please confirm the location you selected."
+        }
         footer={
-          confirm?.type === "single" ? (
+          confirm?.type === "single" || confirm?.type === "detected" ? (
             <>
               <Button
                 type="button"
@@ -1125,7 +1204,7 @@ export default function OnboardingPage() {
           ) : undefined
         }
       >
-        {confirm?.type === "single" ? (
+        {confirm?.type === "single" || confirm?.type === "detected" ? (
           <div className="flex flex-col gap-2 text-sm">
             <p className="text-foreground">
               <span className="font-medium">Village:</span>{" "}

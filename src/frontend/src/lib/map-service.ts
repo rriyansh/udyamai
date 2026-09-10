@@ -20,6 +20,15 @@ export interface MapServiceResult {
   error: string | null;
 }
 
+interface GeocoderAddressComponent {
+  long_name: string;
+  types: string[];
+}
+
+interface GeocoderResult {
+  address_components: GeocoderAddressComponent[];
+}
+
 interface GoogleMapsApi {
   maps: {
     Map: new (
@@ -40,6 +49,12 @@ interface GoogleMapsApi {
       strokeColor: string;
       strokeOpacity: number;
     }) => unknown;
+    Geocoder: new () => {
+      geocode: (
+        request: { location: { lat: number; lng: number } },
+        callback: (results: GeocoderResult[] | null, status: string) => void,
+      ) => void;
+    };
   };
 }
 
@@ -101,6 +116,43 @@ export function renderGoogleMap(
       title: competitor.name,
     });
   }
+}
+
+export interface ReverseGeocodeResult {
+  village?: string;
+  block?: string;
+  district?: string;
+  state?: string;
+}
+
+/**
+ * Reverse-geocodes a detected location into real address components via the
+ * Google Maps Geocoder. Never invents a village/district/state — any
+ * component the API does not return is simply omitted so the UI can ask
+ * the user to fill it in manually instead of showing fabricated data.
+ */
+export function reverseGeocode(
+  api: GoogleMapsApi,
+  location: GeoLocation,
+): Promise<ReverseGeocodeResult | null> {
+  return new Promise((resolve) => {
+    const geocoder = new api.maps.Geocoder();
+    geocoder.geocode({ location }, (results, status) => {
+      if (status !== "OK" || !results || results.length === 0) {
+        resolve(null);
+        return;
+      }
+      const components = results[0].address_components;
+      const find = (type: string) =>
+        components.find((c) => c.types.includes(type))?.long_name;
+      resolve({
+        village: find("locality") ?? find("sublocality") ?? find("postal_town"),
+        block: find("administrative_area_level_3"),
+        district: find("administrative_area_level_2"),
+        state: find("administrative_area_level_1"),
+      });
+    });
+  });
 }
 
 export function getCurrentLocation(): Promise<MapServiceResult> {
