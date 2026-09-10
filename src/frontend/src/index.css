@@ -1,0 +1,608 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@font-face {
+  font-family: "Space Grotesk";
+  src: url("/assets/fonts/SpaceGrotesk.woff2") format("woff2");
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "General Sans";
+  src: url("/assets/fonts/GeneralSans.woff2") format("woff2");
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Geist Mono";
+  src: url("/assets/fonts/GeistMono.woff2") format("woff2");
+  font-display: swap;
+}
+
+@layer base {
+  :root {
+    --font-display: "Space Grotesk", sans-serif;
+    --font-body: "General Sans", sans-serif;
+    --font-mono: "Geist Mono", monospace;
+    --radius: 0.75rem;
+
+    --background: 0.99 0.006 285;
+    --foreground: 0.16 0.03 285;
+    --card: 1 0.004 285;
+    --card-foreground: 0.16 0.03 285;
+    --popover: 1 0.004 285;
+    --popover-foreground: 0.16 0.03 285;
+
+    --primary: 0.42 0.19 285;
+    --primary-foreground: 0.98 0.006 285;
+
+    --secondary: 0.95 0.012 285;
+    --secondary-foreground: 0.28 0.04 285;
+    --muted: 0.955 0.01 285;
+    --muted-foreground: 0.5 0.03 285;
+
+    --accent: 0.62 0.13 300;
+    --accent-foreground: 0.16 0.03 285;
+
+    --destructive: 0.55 0.22 25;
+    --destructive-foreground: 0.98 0.006 25;
+
+    --success: 0.55 0.18 150;
+    --warning: 0.7 0.15 85;
+
+    --border: 0.9 0.012 285;
+    --input: 0.9 0.012 285;
+    --ring: 0.42 0.19 285;
+
+    --chart-1: 0.42 0.19 285;
+    --chart-2: 0.62 0.13 300;
+    --chart-3: 0.55 0.18 150;
+    --chart-4: 0.7 0.15 85;
+    --chart-5: 0.55 0.22 25;
+
+    --sidebar: 0.985 0.008 285;
+    --sidebar-foreground: 0.16 0.03 285;
+    --sidebar-primary: 0.42 0.19 285;
+    --sidebar-primary-foreground: 0.98 0.006 285;
+    --sidebar-accent: 0.95 0.012 285;
+    --sidebar-accent-foreground: 0.28 0.04 285;
+    --sidebar-border: 0.9 0.012 285;
+    --sidebar-ring: 0.42 0.19 285;
+
+    --gradient-primary: linear-gradient(
+      135deg,
+      oklch(0.42 0.19 285),
+      oklch(0.55 0.19 305)
+    );
+    --gradient-subtle: linear-gradient(
+      180deg,
+      oklch(1 0.004 285),
+      oklch(0.96 0.014 285)
+    );
+
+    /* Phase 2 — provenance labels */
+    --provenance-estimated: 0.66 0.08 300;
+    --provenance-estimated-foreground: 0.32 0.1 300;
+    --provenance-observed: 0.66 0.08 265;
+    --provenance-observed-foreground: 0.3 0.1 265;
+    --provenance-calculated: 0.66 0.08 235;
+    --provenance-calculated-foreground: 0.3 0.1 235;
+    --provenance-user: 0.66 0.05 285;
+    --provenance-user-foreground: 0.32 0.06 285;
+
+    /* Phase 2 — confidence */
+    --confidence-high: 0.55 0.18 150;
+    --confidence-medium: 0.7 0.15 85;
+    --confidence-low: 0.55 0.22 25;
+
+    /* Phase 2 — risk chips */
+    --risk-low: 0.55 0.18 150;
+    --risk-medium: 0.7 0.15 85;
+    --risk-high: 0.55 0.22 25;
+
+    /* Phase 2 — score ring / gauge */
+    --score-ring-track: 0.9 0.012 285;
+    --score-ring-fill: 0.42 0.19 285;
+    --score-ring-strong: 0.55 0.18 150;
+    --score-ring-moderate: 0.7 0.15 85;
+    --score-ring-weak: 0.55 0.22 25;
+
+    /* Phase 2 — competitor map density + markers */
+    --map-dense: 0.42 0.19 285;
+    --map-moderate: 0.62 0.13 300;
+    --map-sparse: 0.7 0.15 85;
+    --map-underserved: 0.55 0.18 150;
+    --map-marker: 0.55 0.19 305;
+
+    /* Phase 3 — financial planning categories */
+    --fin-money: 0.55 0.18 150;
+    --fin-loan: 0.5 0.16 275;
+    --fin-interest: 0.62 0.16 60;
+    --fin-capital: 0.55 0.12 185;
+    --fin-breakeven: 0.55 0.16 305;
+    --fin-operating: 0.5 0.05 285;
+    --fin-foreground: 0.3 0.03 285;
+
+    /* Phase 3 — feasibility breakdown */
+    --feas-market: 0.55 0.18 150;
+    --feas-financial: 0.5 0.16 275;
+    --feas-competition: 0.7 0.15 85;
+    --feas-risk: 0.55 0.22 25;
+
+    /* Phase 3 — what-if estimate */
+    --estimate: 0.66 0.08 300;
+    --estimate-foreground: 0.32 0.1 300;
+
+    /* Phase 3 — plain-language explanation */
+    --explain-bg: 0.95 0.02 285;
+    --explain-border: 0.42 0.19 285;
+    --explain-fg: 0.3 0.04 285;
+  }
+
+  .dark {
+    --background: 0.145 0.02 285;
+    --foreground: 0.95 0.01 285;
+    --card: 0.18 0.022 285;
+    --card-foreground: 0.95 0.01 285;
+    --popover: 0.2 0.022 285;
+    --popover-foreground: 0.95 0.01 285;
+
+    --primary: 0.68 0.17 290;
+    --primary-foreground: 0.145 0.02 285;
+
+    --secondary: 0.23 0.025 285;
+    --secondary-foreground: 0.85 0.01 285;
+    --muted: 0.23 0.025 285;
+    --muted-foreground: 0.58 0.02 285;
+
+    --accent: 0.7 0.13 300;
+    --accent-foreground: 0.145 0.02 285;
+
+    --destructive: 0.6 0.2 25;
+    --destructive-foreground: 0.95 0.01 25;
+
+    --success: 0.6 0.18 150;
+    --warning: 0.75 0.15 85;
+
+    --border: 0.28 0.025 285;
+    --input: 0.28 0.025 285;
+    --ring: 0.68 0.17 290;
+
+    --chart-1: 0.68 0.17 290;
+    --chart-2: 0.7 0.13 300;
+    --chart-3: 0.6 0.18 150;
+    --chart-4: 0.75 0.15 85;
+    --chart-5: 0.6 0.2 25;
+
+    --sidebar: 0.18 0.022 285;
+    --sidebar-foreground: 0.95 0.01 285;
+    --sidebar-primary: 0.68 0.17 290;
+    --sidebar-primary-foreground: 0.145 0.02 285;
+    --sidebar-accent: 0.23 0.025 285;
+    --sidebar-accent-foreground: 0.85 0.01 285;
+    --sidebar-border: 0.28 0.025 285;
+    --sidebar-ring: 0.68 0.17 290;
+
+    --gradient-primary: linear-gradient(
+      135deg,
+      oklch(0.68 0.17 290),
+      oklch(0.62 0.19 305)
+    );
+    --gradient-subtle: linear-gradient(
+      180deg,
+      oklch(0.18 0.022 285),
+      oklch(0.145 0.02 285)
+    );
+
+    /* Phase 2 — provenance labels */
+    --provenance-estimated: 0.62 0.09 300;
+    --provenance-estimated-foreground: 0.9 0.05 300;
+    --provenance-observed: 0.62 0.09 265;
+    --provenance-observed-foreground: 0.9 0.05 265;
+    --provenance-calculated: 0.62 0.09 235;
+    --provenance-calculated-foreground: 0.9 0.05 235;
+    --provenance-user: 0.62 0.06 285;
+    --provenance-user-foreground: 0.9 0.04 285;
+
+    /* Phase 2 — confidence */
+    --confidence-high: 0.6 0.18 150;
+    --confidence-medium: 0.75 0.15 85;
+    --confidence-low: 0.6 0.2 25;
+
+    /* Phase 2 — risk chips */
+    --risk-low: 0.6 0.18 150;
+    --risk-medium: 0.75 0.15 85;
+    --risk-high: 0.6 0.2 25;
+
+    /* Phase 2 — score ring / gauge */
+    --score-ring-track: 0.28 0.025 285;
+    --score-ring-fill: 0.68 0.17 290;
+    --score-ring-strong: 0.6 0.18 150;
+    --score-ring-moderate: 0.75 0.15 85;
+    --score-ring-weak: 0.6 0.2 25;
+
+    /* Phase 2 — competitor map density + markers */
+    --map-dense: 0.68 0.17 290;
+    --map-moderate: 0.7 0.13 300;
+    --map-sparse: 0.75 0.15 85;
+    --map-underserved: 0.6 0.18 150;
+    --map-marker: 0.62 0.19 305;
+
+    /* Phase 3 — financial planning categories */
+    --fin-money: 0.6 0.18 150;
+    --fin-loan: 0.62 0.16 275;
+    --fin-interest: 0.72 0.16 60;
+    --fin-capital: 0.6 0.12 185;
+    --fin-breakeven: 0.62 0.16 305;
+    --fin-operating: 0.62 0.06 285;
+    --fin-foreground: 0.85 0.02 285;
+
+    /* Phase 3 — feasibility breakdown */
+    --feas-market: 0.6 0.18 150;
+    --feas-financial: 0.62 0.16 275;
+    --feas-competition: 0.75 0.15 85;
+    --feas-risk: 0.6 0.2 25;
+
+    /* Phase 3 — what-if estimate */
+    --estimate: 0.62 0.09 300;
+    --estimate-foreground: 0.9 0.05 300;
+
+    /* Phase 3 — plain-language explanation */
+    --explain-bg: 0.2 0.03 285;
+    --explain-border: 0.68 0.17 290;
+    --explain-fg: 0.9 0.02 285;
+  }
+
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground font-body antialiased;
+  }
+
+  /* Accessibility: large text */
+  .text-large {
+    font-size: 1.0625rem;
+  }
+  .text-large p,
+  .text-large li,
+  .text-large label,
+  .text-large input,
+  .text-large textarea,
+  .text-large select {
+    font-size: 1.0625rem;
+  }
+
+  /* Accessibility: high contrast */
+  .high-contrast {
+    --border: 0.78 0.03 285;
+    --input: 0.78 0.03 285;
+    --muted-foreground: 0.42 0.04 285;
+  }
+  .dark.high-contrast {
+    --border: 0.45 0.03 285;
+    --input: 0.45 0.03 285;
+    --muted-foreground: 0.72 0.02 285;
+  }
+
+  /* Accessibility: reduced motion */
+  .reduce-motion *,
+  .reduce-motion *::before,
+  .reduce-motion *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.001ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.001ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
+
+@layer utilities {
+  .transition-smooth {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .text-gradient {
+    background: var(--gradient-primary);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  .bg-gradient-primary {
+    background: var(--gradient-primary);
+  }
+  .bg-gradient-subtle {
+    background: var(--gradient-subtle);
+  }
+
+  /* ---- Phase 2: provenance labels ---- */
+  .prov-estimated {
+    background: oklch(var(--provenance-estimated) / 0.18);
+    color: var(--provenance-estimated-foreground);
+  }
+  .prov-observed {
+    background: oklch(var(--provenance-observed) / 0.18);
+    color: var(--provenance-observed-foreground);
+  }
+  .prov-calculated {
+    background: oklch(var(--provenance-calculated) / 0.18);
+    color: var(--provenance-calculated-foreground);
+  }
+  .prov-user {
+    background: oklch(var(--provenance-user) / 0.18);
+    color: var(--provenance-user-foreground);
+  }
+
+  /* ---- Phase 2: confidence badges ---- */
+  .conf-high {
+    background: oklch(var(--confidence-high) / 0.16);
+    color: var(--confidence-high);
+  }
+  .conf-medium {
+    background: oklch(var(--confidence-medium) / 0.16);
+    color: var(--confidence-medium);
+  }
+  .conf-low {
+    background: oklch(var(--confidence-low) / 0.16);
+    color: var(--confidence-low);
+  }
+
+  /* ---- Phase 2: risk chips ---- */
+  .risk-low {
+    background: oklch(var(--risk-low) / 0.16);
+    color: var(--risk-low);
+  }
+  .risk-medium {
+    background: oklch(var(--risk-medium) / 0.16);
+    color: var(--risk-medium);
+  }
+  .risk-high {
+    background: oklch(var(--risk-high) / 0.16);
+    color: var(--risk-high);
+  }
+
+  /* ---- Phase 2: score ring / gauge ---- */
+  .score-ring {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 9999px;
+  }
+  .score-ring-track {
+    color: oklch(var(--score-ring-track));
+  }
+  .score-ring-fill {
+    color: oklch(var(--score-ring-fill));
+  }
+  .score-ring-strong {
+    color: oklch(var(--score-ring-strong));
+  }
+  .score-ring-moderate {
+    color: oklch(var(--score-ring-moderate));
+  }
+  .score-ring-weak {
+    color: oklch(var(--score-ring-weak));
+  }
+
+  /* ---- Phase 2: analysis progress (indeterminate) ---- */
+  .progress-track {
+    position: relative;
+    overflow: hidden;
+    border-radius: 9999px;
+    background: oklch(var(--muted));
+  }
+  .progress-indeterminate {
+    position: absolute;
+    inset-block: 0;
+    width: 40%;
+    border-radius: 9999px;
+    background: var(--gradient-primary);
+    animation: progress-slide 1.6s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+  }
+  .progress-stage-dot {
+    transition: background-color 0.3s cubic-bezier(0.4, 0, 0.2, 1), transform
+      0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .progress-stage-dot.active {
+    background: oklch(var(--primary));
+    transform: scale(1.15);
+  }
+  .progress-stage-dot.done {
+    background: oklch(var(--success));
+  }
+
+  /* ---- Phase 2: compact listen button ---- */
+  .listen-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 9999px;
+    background: oklch(var(--muted));
+    color: oklch(var(--muted-foreground));
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .listen-btn:hover {
+    background: oklch(var(--accent) / 0.18);
+    color: oklch(var(--accent-foreground));
+  }
+  .listen-btn.listening {
+    background: oklch(var(--primary));
+    color: oklch(var(--primary-foreground));
+  }
+
+  /* ---- Phase 2: competitor map legend + density ---- */
+  .map-density-dense {
+    color: oklch(var(--map-dense));
+  }
+  .map-density-moderate {
+    color: oklch(var(--map-moderate));
+  }
+  .map-density-sparse {
+    color: oklch(var(--map-sparse));
+  }
+  .map-density-underserved {
+    color: oklch(var(--map-underserved));
+  }
+  .map-marker {
+    color: oklch(var(--map-marker));
+  }
+  .map-legend-swatch {
+    display: inline-block;
+    width: 0.625rem;
+    height: 0.625rem;
+    border-radius: 9999px;
+  }
+
+  /* ---- Phase 3: financial metric colors ---- */
+  .fin-money {
+    color: oklch(var(--fin-money));
+  }
+  .fin-loan {
+    color: oklch(var(--fin-loan));
+  }
+  .fin-interest {
+    color: oklch(var(--fin-interest));
+  }
+  .fin-capital {
+    color: oklch(var(--fin-capital));
+  }
+  .fin-breakeven {
+    color: oklch(var(--fin-breakeven));
+  }
+  .fin-operating {
+    color: oklch(var(--fin-operating));
+  }
+
+  .fin-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    border-radius: 9999px;
+    padding: 0.25rem 0.625rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    line-height: 1.25;
+  }
+
+  /* ---- Phase 3: financial stat number ---- */
+  .fin-stat {
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.02em;
+  }
+
+  /* ---- Phase 3: feasibility breakdown ---- */
+  .feas-market {
+    color: oklch(var(--feas-market));
+  }
+  .feas-financial {
+    color: oklch(var(--feas-financial));
+  }
+  .feas-competition {
+    color: oklch(var(--feas-competition));
+  }
+  .feas-risk {
+    color: oklch(var(--feas-risk));
+  }
+
+  /* ---- Phase 3: what-if estimate label ---- */
+  .estimate-tag {
+    background: oklch(var(--estimate) / 0.16);
+    color: var(--estimate-foreground);
+  }
+
+  /* ---- Phase 3: plain-language explanation ---- */
+  .explain {
+    border: 1px solid oklch(var(--explain-border) / 0.35);
+    background: oklch(var(--explain-bg));
+    color: var(--explain-fg);
+    border-radius: 1rem;
+    padding: 1rem 1.25rem;
+  }
+  .explain-title {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-family: var(--font-display);
+    font-weight: 600;
+  }
+
+  /* ---- Phase 3: repayment schedule table ---- */
+  .repay-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-variant-numeric: tabular-nums;
+  }
+  .repay-table th {
+    text-align: left;
+    font-size: 0.6875rem;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: oklch(var(--muted-foreground));
+    padding: 0.5rem 0.75rem;
+    border-bottom: 1px solid oklch(var(--border));
+  }
+  .repay-table td {
+    padding: 0.625rem 0.75rem;
+    border-bottom: 1px solid oklch(var(--border) / 0.6);
+    font-size: 0.875rem;
+  }
+  .repay-table tr:last-child td {
+    border-bottom: none;
+  }
+  .repay-table .num {
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
+    text-align: right;
+  }
+
+  /* ---- Phase 3: what-if slider ---- */
+  .slider {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 100%;
+    height: 0.5rem;
+    border-radius: 9999px;
+    background: oklch(var(--muted));
+    outline: none;
+  }
+  .slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 1.25rem;
+    height: 1.25rem;
+    border-radius: 9999px;
+    background: var(--gradient-primary);
+    border: 2px solid oklch(var(--card));
+    cursor: pointer;
+    box-shadow: 0 1px 4px rgba(30, 20, 60, 0.2);
+  }
+  .slider::-moz-range-thumb {
+    width: 1.25rem;
+    height: 1.25rem;
+    border-radius: 9999px;
+    background: var(--gradient-primary);
+    border: 2px solid oklch(var(--card));
+    cursor: pointer;
+  }
+}
+
+@keyframes progress-slide {
+  0% {
+    left: -40%;
+  }
+  100% {
+    left: 100%;
+  }
+}

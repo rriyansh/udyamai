@@ -1,0 +1,492 @@
+// Version: 4.0.0
+type AccessControlState__237232917 =
+  {
+    var adminAssigned : Bool;
+    userRoles : Map__386906547<Principal, UserRole__778770049>
+  };
+type AccessControlState__74708363 =
+  {
+    var adminAssigned : Bool;
+    userRoles : Map__386906547<Principal, UserRole__19212889>
+  };
+type AccessControlState__956640379 =
+  {
+    var adminAssigned : Bool;
+    userRoles : Map__386906547<Principal, UserRole__693616939>
+  };
+type AnalysisInput__1029330739 =
+  {
+    block : Text;
+    capital : Nat;
+    category : Text;
+    district : Text;
+    state : Text;
+    village : Text
+  };
+type AnalysisInput__394657033 =
+  {
+    block : Text;
+    capital : Nat;
+    category : Text;
+    district : Text;
+    state : Text;
+    village : Text
+  };
+type AnalysisInput__94208200 =
+  {
+    block : Text;
+    capital : Nat;
+    category : Text;
+    district : Text;
+    state : Text;
+    village : Text
+  };
+type AnalysisResult__157842152 =
+  {
+    map : MapData__807537097;
+    market : MarketReach__215054019;
+    pricing : Pricing__135096253;
+    risk : RiskAssessment__922010966;
+    scores : Scores__42083348;
+    swot : SWOT__803838273
+  };
+type AnalysisResult__77203925 =
+  {
+    map : MapData__549229890;
+    market : MarketReach__244866681;
+    pricing : Pricing__158480848;
+    risk : RiskAssessment__369421163;
+    scores : Scores__107675341;
+    swot : SWOT__303718524
+  };
+type AnalysisResult__800433790 =
+  {
+    map : MapData__505844109;
+    market : MarketReach__594374090;
+    pricing : Pricing__712916092;
+    risk : RiskAssessment__608060251;
+    scores : Scores__236526594;
+    swot : SWOT__34697715
+  };
+type Analysis__580396982 =
+  {
+    createdAt : Int;
+    id : Nat;
+    input : AnalysisInput__394657033;
+    radius : Radius__226737048;
+    result : AnalysisResult__800433790
+  };
+type Analysis__818522526 =
+  {
+    createdAt : Int;
+    id : Nat;
+    input : AnalysisInput__94208200;
+    radius : Radius__696239892;
+    result : AnalysisResult__77203925
+  };
+type Analysis__841008833 =
+  {
+    createdAt : Int;
+    id : Nat;
+    input : AnalysisInput__1029330739;
+    radius : Radius__427439067;
+    result : AnalysisResult__157842152
+  };
+type Competitor__18280809 =
+  {
+    distanceKm : Float;
+    id : Nat;
+    lat : Float;
+    lng : Float;
+    name : Text;
+    priceRangeAvg : Nat;
+    priceRangeMax : Nat;
+    priceRangeMin : Nat
+  };
+type Competitor__381628917 =
+  {
+    distanceKm : Float;
+    id : Nat;
+    lat : Float;
+    lng : Float;
+    name : Text;
+    priceRangeAvg : Nat;
+    priceRangeMax : Nat;
+    priceRangeMin : Nat
+  };
+type Competitor__937693206 =
+  {
+    distanceKm : Float;
+    id : Nat;
+    lat : Float;
+    lng : Float;
+    name : Text;
+    priceRangeAvg : Nat;
+    priceRangeMax : Nat;
+    priceRangeMin : Nat
+  };
+type Confidence__116903859 = {#High; #Low; #Medium};
+type Confidence__925063176 = {#High; #Low; #Medium};
+type Confidence__932506555 = {#High; #Low; #Medium};
+type Data__265875254<K, V> = {var count : Nat__58649523; kvs : [var ?(K, V)]};
+type Estimate__273538575 =
+  {
+    confidence : Confidence__932506555;
+    provenance : Provenance__544175743;
+    value : Nat
+  };
+type Estimate__554224036 =
+  {
+    confidence : Confidence__925063176;
+    provenance : Provenance__78005243;
+    value : Nat
+  };
+type Estimate__711101839 =
+  {
+    confidence : Confidence__116903859;
+    provenance : Provenance__473758676;
+    value : Nat
+  };
+type Internal__161573640<K, V> =
+  {children : [var ?Node__430031793<K, V>]; data : Data__265875254<K, V>};
+type Leaf__1045638083<K, V> = {data : Data__265875254<K, V>};
+type List__1004628775<T> =
+  {
+    var blockIndex : Nat__58649523;
+    var blocks : [var [var ?T]];
+    var elementIndex : Nat__58649523
+  };
+type List__89170296<T> = List__1004628775<T>;
+type LoanProduct__658088772 =
+  {
+    id : Nat;
+    interestRate : ?Float;
+    loanPercentage : ?Nat;
+    marginRequirement : ?Nat;
+    moratoriumMonths : ?Nat;
+    name : Text;
+    schemeId : Nat;
+    tenureMonths : ?Nat
+  };
+type LoanProduct__751529056 =
+  {
+    id : Nat;
+    interestRate : ?Float;
+    loanPercentage : ?Nat;
+    marginRequirement : ?Nat;
+    moratoriumMonths : ?Nat;
+    name : Text;
+    schemeId : Nat;
+    tenureMonths : ?Nat
+  };
+type MapData__505844109 =
+  {
+    averageDistance : Float;
+    businessClusters : [Text];
+    competitorDensity : Float;
+    competitors : [Competitor__18280809];
+    nearestCompetitors : [Competitor__18280809];
+    reliableDataAvailable : Bool;
+    underservedZones : [Text];
+    userLocation : {lat : Float; lng : Float}
+  };
+type MapData__549229890 =
+  {
+    averageDistance : Float;
+    businessClusters : [Text];
+    competitorDensity : Float;
+    competitors : [Competitor__937693206];
+    nearestCompetitors : [Competitor__937693206];
+    reliableDataAvailable : Bool;
+    underservedZones : [Text];
+    userLocation : {lat : Float; lng : Float}
+  };
+type MapData__807537097 =
+  {
+    averageDistance : Float;
+    businessClusters : [Text];
+    competitorDensity : Float;
+    competitors : [Competitor__381628917];
+    nearestCompetitors : [Competitor__381628917];
+    reliableDataAvailable : Bool;
+    underservedZones : [Text];
+    userLocation : {lat : Float; lng : Float}
+  };
+type Map__13625999<K, V> =
+  {var root : Node__430031793<K, V>; var size : Nat__58649523};
+type Map__386906547<K, V> = Map__670138087<K, V>;
+type Map__670138087<K, V> = Map__13625999<K, V>;
+type MarketReach__215054019 =
+  {
+    accessibility : Text;
+    competitionLevel : Text;
+    demandIndicators : [Text];
+    distributionChannels : [Text];
+    estimatedReach : Estimate__273538575;
+    nearbyMarkets : [Text];
+    potentialCustomerBase : Estimate__273538575;
+    supplyIndicators : [Text];
+    underservedOpportunities : [Text]
+  };
+type MarketReach__244866681 =
+  {
+    accessibility : Text;
+    competitionLevel : Text;
+    demandIndicators : [Text];
+    distributionChannels : [Text];
+    estimatedReach : Estimate__554224036;
+    nearbyMarkets : [Text];
+    potentialCustomerBase : Estimate__554224036;
+    supplyIndicators : [Text];
+    underservedOpportunities : [Text]
+  };
+type MarketReach__594374090 =
+  {
+    accessibility : Text;
+    competitionLevel : Text;
+    demandIndicators : [Text];
+    distributionChannels : [Text];
+    estimatedReach : Estimate__711101839;
+    nearbyMarkets : [Text];
+    potentialCustomerBase : Estimate__711101839;
+    supplyIndicators : [Text];
+    underservedOpportunities : [Text]
+  };
+type Nat__58649523 = Nat__920180692;
+type Nat__920180692 = Nat;
+type NewActor__1047624491 =
+  {
+    accessControlState : AccessControlState__956640379;
+    analyses : List__89170296<Analysis__580396982>;
+    loanProducts : List__89170296<LoanProduct__658088772>;
+    schemeRules : List__89170296<SchemeRule__561143607>;
+    schemes : List__89170296<Scheme__780852079>;
+    state : {var nextId : Nat}
+  };
+type NewActor__556041151 =
+  {accessControlState : AccessControlState__237232917};
+type NewActor__650048566 =
+  {
+    accessControlState : AccessControlState__74708363;
+    analyses : List__89170296<Analysis__818522526>;
+    state : {var nextId : Nat}
+  };
+type Node__430031793<K, V> =
+  {#internal : Internal__161573640<K, V>; #leaf : Leaf__1045638083<K, V>};
+type OldActor__190834961 = {};
+type OldActor__280345825 =
+  {accessControlState : AccessControlState__74708363};
+type OldActor__865765160 =
+  {
+    accessControlState : AccessControlState__956640379;
+    analyses : List__89170296<Analysis__580396982>;
+    state : {var nextId : Nat}
+  };
+type Pricing__135096253 =
+  {
+    competitorPriceRange : {avg : Nat; max : Nat; min : Nat};
+    estimatedMargin : Estimate__273538575;
+    operatingCost : Estimate__273538575;
+    packagingCost : Estimate__273538575;
+    productionCost : Estimate__273538575;
+    recommendedPriceRange : {max : Nat; min : Nat};
+    transportCost : Estimate__273538575
+  };
+type Pricing__158480848 =
+  {
+    competitorPriceRange : {avg : Nat; max : Nat; min : Nat};
+    estimatedMargin : Estimate__554224036;
+    operatingCost : Estimate__554224036;
+    packagingCost : Estimate__554224036;
+    productionCost : Estimate__554224036;
+    recommendedPriceRange : {max : Nat; min : Nat};
+    transportCost : Estimate__554224036
+  };
+type Pricing__712916092 =
+  {
+    competitorPriceRange : {avg : Nat; max : Nat; min : Nat};
+    estimatedMargin : Estimate__711101839;
+    operatingCost : Estimate__711101839;
+    packagingCost : Estimate__711101839;
+    productionCost : Estimate__711101839;
+    recommendedPriceRange : {max : Nat; min : Nat};
+    transportCost : Estimate__711101839
+  };
+type ProjectCostRange__369251264 = {max : Nat; min : Nat};
+type ProjectCostRange__436752964 = {max : Nat; min : Nat};
+type Provenance__473758676 =
+  {#Calculated; #Estimated; #Observed; #UserProvided};
+type Provenance__544175743 =
+  {#Calculated; #Estimated; #Observed; #UserProvided};
+type Provenance__78005243 =
+  {#Calculated; #Estimated; #Observed; #UserProvided};
+type Radius__226737048 = {#R10km; #R5km};
+type Radius__427439067 = {#R10km; #R5km};
+type Radius__696239892 = {#R10km; #R5km};
+type RiskAssessment__369421163 = {categories : [RiskCategory__707790136]};
+type RiskAssessment__608060251 = {categories : [RiskCategory__675087945]};
+type RiskAssessment__922010966 = {categories : [RiskCategory__461032059]};
+type RiskCategory__461032059 =
+  {
+    category : Text;
+    level : RiskLevel__989140961;
+    whatToDo : Text;
+    why : Text
+  };
+type RiskCategory__675087945 =
+  {
+    category : Text;
+    level : RiskLevel__896733215;
+    whatToDo : Text;
+    why : Text
+  };
+type RiskCategory__707790136 =
+  {
+    category : Text;
+    level : RiskLevel__112732216;
+    whatToDo : Text;
+    why : Text
+  };
+type RiskLevel__112732216 = {#High; #Low; #Medium};
+type RiskLevel__896733215 = {#High; #Low; #Medium};
+type RiskLevel__989140961 = {#High; #Low; #Medium};
+type SWOT__303718524 =
+  {
+    opportunities : [Text];
+    strengths : [Text];
+    threats : [Text];
+    weaknesses : [Text]
+  };
+type SWOT__34697715 =
+  {
+    opportunities : [Text];
+    strengths : [Text];
+    threats : [Text];
+    weaknesses : [Text]
+  };
+type SWOT__803838273 =
+  {
+    opportunities : [Text];
+    strengths : [Text];
+    threats : [Text];
+    weaknesses : [Text]
+  };
+type SchemeRule__561143607 =
+  {
+    beneficiaryCategories : [Text];
+    businessCategories : [Text];
+    locations : [Text];
+    schemeId : Nat
+  };
+type SchemeRule__639059935 =
+  {
+    beneficiaryCategories : [Text];
+    businessCategories : [Text];
+    locations : [Text];
+    schemeId : Nat
+  };
+type SchemeStatus__503687762 = {#Active; #Inactive; #UnderReview};
+type SchemeStatus__706909045 = {#Active; #Inactive; #UnderReview};
+type Scheme__584057842 =
+  {
+    beneficiaryType : Text;
+    documents : [Text];
+    eligibility : Text;
+    id : Nat;
+    interestRate : ?Float;
+    lastVerifiedDate : Timestamp__301639476;
+    loanPercentage : ?Nat;
+    marginRequirement : ?Nat;
+    moratoriumMonths : ?Nat;
+    name : Text;
+    officialSource : Text;
+    projectCostRange : ProjectCostRange__369251264;
+    status : SchemeStatus__503687762;
+    tenureMonths : ?Nat
+  };
+type Scheme__780852079 =
+  {
+    beneficiaryType : Text;
+    documents : [Text];
+    eligibility : Text;
+    id : Nat;
+    interestRate : ?Float;
+    lastVerifiedDate : Int;
+    loanPercentage : ?Nat;
+    marginRequirement : ?Nat;
+    moratoriumMonths : ?Nat;
+    name : Text;
+    officialSource : Text;
+    projectCostRange : ProjectCostRange__436752964;
+    status : SchemeStatus__706909045;
+    tenureMonths : ?Nat
+  };
+type ScoreCard__586146187 =
+  {explanation : Text; reasoning : Text; score : Nat};
+type ScoreCard__770509674 =
+  {explanation : Text; reasoning : Text; score : Nat};
+type ScoreCard__798654135 =
+  {explanation : Text; reasoning : Text; score : Nat};
+type Scores__107675341 =
+  {
+    competition : ScoreCard__770509674;
+    demand : ScoreCard__770509674;
+    opportunity : ScoreCard__770509674;
+    supplyGap : ScoreCard__770509674
+  };
+type Scores__236526594 =
+  {
+    competition : ScoreCard__586146187;
+    demand : ScoreCard__586146187;
+    opportunity : ScoreCard__586146187;
+    supplyGap : ScoreCard__586146187
+  };
+type Scores__42083348 =
+  {
+    competition : ScoreCard__798654135;
+    demand : ScoreCard__798654135;
+    opportunity : ScoreCard__798654135;
+    supplyGap : ScoreCard__798654135
+  };
+type Timestamp__301639476 = Int;
+type UserRole__19212889 = {#admin; #guest; #user};
+type UserRole__693616939 = {#admin; #guest; #user};
+type UserRole__778770049 = {#admin; #guest; #user};
+type UserRole__91647283 = {#admin; #guest; #user};
+{
+  "20260910_000000" : (_old : OldActor__190834961) -> NewActor__556041151;
+  "20260910_120000" : (old : OldActor__280345825) -> NewActor__650048566;
+  "20260910_130000" : (old : OldActor__865765160) -> NewActor__1047624491
+}
+actor  {
+  stable accessControlState :
+    {
+      var adminAssigned : Bool;
+      userRoles : Map__386906547<Principal, UserRole__91647283>
+    };
+  stable analyses :
+    {
+      var blockIndex : Nat__58649523;
+      var blocks : [var [var ?Analysis__841008833]];
+      var elementIndex : Nat__58649523
+    };
+  stable loanProducts :
+    {
+      var blockIndex : Nat__58649523;
+      var blocks : [var [var ?LoanProduct__751529056]];
+      var elementIndex : Nat__58649523
+    };
+  stable schemeRules :
+    {
+      var blockIndex : Nat__58649523;
+      var blocks : [var [var ?SchemeRule__639059935]];
+      var elementIndex : Nat__58649523
+    };
+  stable schemes :
+    {
+      var blockIndex : Nat__58649523;
+      var blocks : [var [var ?Scheme__584057842]];
+      var elementIndex : Nat__58649523
+    };
+  stable state : {var nextId : Nat}
+};

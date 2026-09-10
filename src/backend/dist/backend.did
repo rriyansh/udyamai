@@ -1,0 +1,404 @@
+type WorkingCapitalInput = 
+ record {
+   emergencyBufferPercent: nat;
+   initialRequirement: nat;
+   monthlyRequirement: nat;
+ };
+type WorkingCapital = 
+ record {
+   emergencyBuffer: Estimate;
+   initialRequirement: Estimate;
+   monthlyRequirement: Estimate;
+   totalRequirement: Estimate;
+ };
+type Value = 
+ variant {
+   "bool": bool;
+   float: float64;
+   "int": int;
+   "nat": nat;
+   "null";
+   "text": text;
+ };
+type UserRole = 
+ variant {
+   admin;
+   guest;
+   user;
+ };
+type Timestamp = int;
+type Scores = 
+ record {
+   competition: ScoreCard;
+   demand: ScoreCard;
+   opportunity: ScoreCard;
+   supplyGap: ScoreCard;
+ };
+type ScoreCard = 
+ record {
+   explanation: text;
+   reasoning: text;
+   score: nat;
+ };
+type SchemeStatus = 
+ variant {
+   Active;
+   Inactive;
+   UnderReview;
+ };
+type SchemeRule = 
+ record {
+   beneficiaryContributionPercent: nat;
+   interestRatePercent: nat;
+   loanPercent: nat;
+   maxProjectCost: nat;
+   minProjectCost: nat;
+   moratoriumMonths: nat;
+   name: text;
+   tenureMonths: nat;
+ };
+type SchemeRoutingResult = 
+ record {
+   heading: text;
+   matches: vec SchemeMatch;
+ };
+type SchemeRoutingInput = 
+ record {
+   beneficiaryCategory: text;
+   businessCategory: text;
+   contribution: nat;
+   location: text;
+   projectCost: nat;
+ };
+type SchemeMatch = 
+ record {
+   contribution: opt nat;
+   interestRate: opt float64;
+   loan: opt nat;
+   moratoriumMonths: opt nat;
+   officialVerificationNote: text;
+   projectCostLimit: ProjectCostRange;
+   requiredDocuments: vec text;
+   scheme: Scheme;
+   tenureMonths: opt nat;
+   whyMayFit: text;
+ };
+type Scheme = 
+ record {
+   beneficiaryType: text;
+   documents: vec text;
+   eligibility: text;
+   id: nat;
+   interestRate: opt float64;
+   lastVerifiedDate: Timestamp;
+   loanPercentage: opt nat;
+   marginRequirement: opt nat;
+   moratoriumMonths: opt nat;
+   name: text;
+   officialSource: text;
+   projectCostRange: ProjectCostRange;
+   status: SchemeStatus;
+   tenureMonths: opt nat;
+ };
+type SWOT = 
+ record {
+   opportunities: vec text;
+   strengths: vec text;
+   threats: vec text;
+   weaknesses: vec text;
+ };
+type RiskLevel = 
+ variant {
+   High;
+   Low;
+   Medium;
+ };
+type RiskCategory = 
+ record {
+   category: text;
+   level: RiskLevel;
+   whatToDo: text;
+   why: text;
+ };
+type RiskAssessment = record {categories: vec RiskCategory;};
+type Result__1 = 
+ variant {
+   err: Error;
+   ok;
+ };
+type Result = 
+ record {
+   hasMore: bool;
+   rows: vec vec Cell;
+ };
+type RepaymentRow = 
+ record {
+   closingBalance: nat;
+   emi: nat;
+   interest: nat;
+   month: nat;
+   openingBalance: nat;
+   "principal": nat;
+ };
+type Radius = 
+ variant {
+   R10km;
+   R5km;
+ };
+type Provenance = 
+ variant {
+   Calculated;
+   Estimated;
+   Observed;
+   UserProvided;
+ };
+type ProjectCostRange = 
+ record {
+   max: nat;
+   min: nat;
+ };
+type PrincipalInterest = 
+ record {
+   totalInterest: nat;
+   totalPrincipal: nat;
+   totalRepayment: nat;
+ };
+type Pricing = 
+ record {
+   competitorPriceRange: record {
+                           avg: nat;
+                           max: nat;
+                           min: nat;
+                         };
+   estimatedMargin: Estimate;
+   operatingCost: Estimate;
+   packagingCost: Estimate;
+   productionCost: Estimate;
+   recommendedPriceRange: record {
+                            max: nat;
+                            min: nat;
+                          };
+   transportCost: Estimate;
+ };
+type OperatingCosts = 
+ record {
+   electricity: nat;
+   maintenance: nat;
+   marketing: nat;
+   other: nat;
+   packaging: nat;
+   rawMaterial: nat;
+   rent: nat;
+   salary: nat;
+   transport: nat;
+ };
+type Moratorium = 
+ record {
+   explanation: text;
+   interestAccruedDuringMoratorium: Estimate;
+   moratoriumMonths: nat;
+   repaymentStartMonth: nat;
+ };
+type MarketReach = 
+ record {
+   accessibility: text;
+   competitionLevel: text;
+   demandIndicators: vec text;
+   distributionChannels: vec text;
+   estimatedReach: Estimate;
+   nearbyMarkets: vec text;
+   potentialCustomerBase: Estimate;
+   supplyIndicators: vec text;
+   underservedOpportunities: vec text;
+ };
+type MapData = 
+ record {
+   averageDistance: float64;
+   businessClusters: vec text;
+   competitorDensity: float64;
+   competitors: vec Competitor;
+   nearestCompetitors: vec Competitor;
+   reliableDataAvailable: bool;
+   underservedZones: vec text;
+   userLocation: record {
+                   lat: float64;
+                   lng: float64;
+                 };
+ };
+type Financing = 
+ record {
+   beneficiaryContribution: Estimate;
+   feasibleProjectCost: Estimate;
+   loanAmount: Estimate;
+   maximumLoan: Estimate;
+   scheme: SchemeRule;
+ };
+type FinancialPlan = 
+ record {
+   amortization: Amortization;
+   breakEven: BreakEven;
+   cashRequirement: CashRequirement;
+   financing: Financing;
+   monthlyOperatingCost: Estimate;
+   moratorium: Moratorium;
+   workingCapital: WorkingCapital;
+ };
+type FinanceInput = 
+ record {
+   interestRatePercent: nat;
+   loanRequirement: nat;
+   marginPercent: nat;
+   moratoriumMonths: nat;
+   operatingCosts: OperatingCosts;
+   ownCapital: nat;
+   pricePerUnit: nat;
+   proposedProjectCost: nat;
+   tenureMonths: nat;
+   variableCostPerUnit: nat;
+   workingCapital: WorkingCapitalInput;
+ };
+type Estimate = 
+ record {
+   confidence: Confidence;
+   provenance: Provenance;
+   value: nat;
+ };
+type Error = 
+ variant {
+   AmbiguousAttribute: record {
+                         field: text;
+                         sources: vec text;
+                       };
+   FrontendOriginMismatch: record {
+                             expected: vec text;
+                             got: text;
+                           };
+   FrontendOriginsNotConfigured;
+   MalformedCandid;
+   MissingField: text;
+   MixedSsoSources: record {
+                      otherKeys: vec text;
+                      ssoKeys: vec text;
+                    };
+   NoAttributes;
+   Stale: record {ageNs: nat;};
+   UnknownNonce;
+   UntrustedSsoSource: record {domain: text;};
+ };
+type Confidence = 
+ variant {
+   High;
+   Low;
+   Medium;
+ };
+type Competitor = 
+ record {
+   distanceKm: float64;
+   id: nat;
+   lat: float64;
+   lng: float64;
+   name: text;
+   priceRangeAvg: nat;
+   priceRangeMax: nat;
+   priceRangeMin: nat;
+ };
+type ChatResponse = record {reply: text;};
+type ChatRequest = 
+ record {
+   analysisId: nat;
+   history: vec ChatMessage;
+   message: text;
+ };
+type ChatMessage = 
+ record {
+   content: text;
+   role: variant {
+           assistant;
+           user;
+         };
+ };
+type Cell = 
+ record {
+   name: text;
+   value: Value;
+ };
+type CashRequirement = 
+ record {
+   buffer: Estimate;
+   projectCost: Estimate;
+   total: Estimate;
+   workingCapital: Estimate;
+ };
+type BreakEven = 
+ record {
+   assumptions: vec text;
+   breakEvenSales: Estimate;
+   breakEvenUnits: opt Estimate;
+   explanation: text;
+ };
+type AnalysisResult = 
+ record {
+   map: MapData;
+   market: MarketReach;
+   pricing: Pricing;
+   risk: RiskAssessment;
+   scores: Scores;
+   swot: SWOT;
+ };
+type AnalysisInput = 
+ record {
+   block: text;
+   capital: nat;
+   category: text;
+   district: text;
+   state: text;
+   village: text;
+ };
+type Analysis = 
+ record {
+   createdAt: int;
+   id: nat;
+   input: AnalysisInput;
+   radius: Radius;
+   result: AnalysisResult;
+ };
+type Amortization = 
+ record {
+   emi: Estimate;
+   principalInterest: PrincipalInterest;
+   schedule: vec RepaymentRow;
+   totalInterest: Estimate;
+   totalRepayment: Estimate;
+ };
+service : {
+  _initialize_access_control: () -> ();
+  _internet_identity_sign_in_finish: () -> (Result__1);
+  _internet_identity_sign_in_start: () -> (blob);
+  assignCallerUserRole: (user: principal, role: UserRole) -> ();
+  chat: (request: ChatRequest) -> (ChatResponse);
+  computeAmortization: (loanAmount: nat, interestRatePercent: nat,
+   tenureMonths: nat, moratoriumMonths: nat) -> (Amortization) query;
+  computeBreakEven: (fixedCosts: nat, variableCostPerUnit: nat, pricePerUnit:
+   nat) -> (BreakEven) query;
+  computeCashRequirement: (feasibleProjectCost: nat, workingCapitalTotal:
+   nat, buffer: nat) -> (CashRequirement) query;
+  computeFinancialPlan: (input: FinanceInput, rule: SchemeRule) ->
+   (FinancialPlan) query;
+  computeFinancing: (input: FinanceInput, rule: SchemeRule) ->
+   (Financing) query;
+  computeMoratorium: (loanAmount: nat, interestRatePercent: nat,
+   moratoriumMonths: nat) -> (Moratorium) query;
+  computeWorkingCapital: (input: WorkingCapitalInput) ->
+   (WorkingCapital) query;
+  execute: (qJson: text) -> (Result) query;
+  getAnalysis: (id: nat) -> (opt Analysis) query;
+  getApiDoc: () -> (text) query;
+  getCallerUserRole: () -> (UserRole) query;
+  getScheme: (id: nat) -> (opt Scheme) query;
+  isCallerAdmin: () -> (bool) query;
+  listAnalyses: () -> (vec Analysis) query;
+  listSchemes: () -> (vec Scheme) query;
+  routeSchemes: (input: SchemeRoutingInput) -> (SchemeRoutingResult) query;
+  runAnalysis: (input: AnalysisInput, radius: Radius) -> (AnalysisResult);
+  schema: () -> (text) query;
+}

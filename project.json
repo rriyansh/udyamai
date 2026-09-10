@@ -1,0 +1,19 @@
+{
+  "overview": "UdyamAI is a mobile-first hyper-local market analysis and financial planning app for rural Indian entrepreneurs, turning available capital and business requirements into a transparent, deterministic financial plan with government scheme guidance.",
+  "features": [
+    "Deterministic financial planning engine (project cost, loan, EMI, interest, repayment, working capital, break-even)",
+    "Government scheme database with deterministic scheme routing",
+    "Financial UI with repayment schedule, principal-vs-interest chart, and plain-language explanations",
+    "Interactive What-if Lab with real-time scenario sliders",
+    "Transparent feasibility score and final recommendation"
+  ],
+  "category": "productivity",
+  "tags": [
+    "finance",
+    "small-business",
+    "india",
+    "government-schemes",
+    "planning"
+  ],
+  "last_updated": "2026-09-10T04:44:19.191Z"
+}
