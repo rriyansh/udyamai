@@ -27,23 +27,23 @@
     --font-mono: "Geist Mono", monospace;
     --radius: 0.75rem;
 
-    --background: 0.99 0.006 285;
-    --foreground: 0.16 0.03 285;
-    --card: 1 0.004 285;
-    --card-foreground: 0.16 0.03 285;
-    --popover: 1 0.004 285;
-    --popover-foreground: 0.16 0.03 285;
+    --background: 0.985 0.012 105;
+    --foreground: 0.16 0.02 145;
+    --card: 0.998 0.006 105;
+    --card-foreground: 0.16 0.02 145;
+    --popover: 0.998 0.006 105;
+    --popover-foreground: 0.16 0.02 145;
 
-    --primary: 0.42 0.19 285;
-    --primary-foreground: 0.98 0.006 285;
+    --primary: 0.62 0.19 145;
+    --primary-foreground: 0.12 0.02 145;
 
-    --secondary: 0.95 0.012 285;
-    --secondary-foreground: 0.28 0.04 285;
-    --muted: 0.955 0.01 285;
-    --muted-foreground: 0.5 0.03 285;
+    --secondary: 0.95 0.018 105;
+    --secondary-foreground: 0.25 0.04 145;
+    --muted: 0.955 0.014 105;
+    --muted-foreground: 0.47 0.03 145;
 
-    --accent: 0.62 0.13 300;
-    --accent-foreground: 0.16 0.03 285;
+    --accent: 0.78 0.15 105;
+    --accent-foreground: 0.16 0.02 145;
 
     --destructive: 0.55 0.22 25;
     --destructive-foreground: 0.98 0.006 25;
@@ -51,9 +51,9 @@
     --success: 0.55 0.18 150;
     --warning: 0.7 0.15 85;
 
-    --border: 0.9 0.012 285;
-    --input: 0.9 0.012 285;
-    --ring: 0.42 0.19 285;
+    --border: 0.88 0.018 105;
+    --input: 0.88 0.018 105;
+    --ring: 0.62 0.19 145;
 
     --chart-1: 0.42 0.19 285;
     --chart-2: 0.62 0.13 300;
@@ -61,24 +61,24 @@
     --chart-4: 0.7 0.15 85;
     --chart-5: 0.55 0.22 25;
 
-    --sidebar: 0.985 0.008 285;
-    --sidebar-foreground: 0.16 0.03 285;
-    --sidebar-primary: 0.42 0.19 285;
-    --sidebar-primary-foreground: 0.98 0.006 285;
-    --sidebar-accent: 0.95 0.012 285;
-    --sidebar-accent-foreground: 0.28 0.04 285;
-    --sidebar-border: 0.9 0.012 285;
-    --sidebar-ring: 0.42 0.19 285;
+    --sidebar: 0.98 0.012 105;
+    --sidebar-foreground: 0.16 0.02 145;
+    --sidebar-primary: 0.62 0.19 145;
+    --sidebar-primary-foreground: 0.12 0.02 145;
+    --sidebar-accent: 0.95 0.018 105;
+    --sidebar-accent-foreground: 0.25 0.04 145;
+    --sidebar-border: 0.88 0.018 105;
+    --sidebar-ring: 0.62 0.19 145;
 
     --gradient-primary: linear-gradient(
       135deg,
-      oklch(0.42 0.19 285),
-      oklch(0.55 0.19 305)
+      oklch(0.62 0.19 145),
+      oklch(0.72 0.16 105)
     );
     --gradient-subtle: linear-gradient(
       180deg,
-      oklch(1 0.004 285),
-      oklch(0.96 0.014 285)
+      oklch(1 0.006 105),
+      oklch(0.96 0.018 105)
     );
 
     /* Phase 2 — provenance labels */
@@ -141,23 +141,23 @@
   }
 
   .dark {
-    --background: 0.145 0.02 285;
-    --foreground: 0.95 0.01 285;
-    --card: 0.18 0.022 285;
-    --card-foreground: 0.95 0.01 285;
-    --popover: 0.2 0.022 285;
-    --popover-foreground: 0.95 0.01 285;
+    --background: 0.145 0.02 145;
+    --foreground: 0.95 0.01 105;
+    --card: 0.18 0.022 145;
+    --card-foreground: 0.95 0.01 105;
+    --popover: 0.2 0.022 145;
+    --popover-foreground: 0.95 0.01 105;
 
-    --primary: 0.68 0.17 290;
-    --primary-foreground: 0.145 0.02 285;
+    --primary: 0.78 0.18 145;
+    --primary-foreground: 0.12 0.02 145;
 
-    --secondary: 0.23 0.025 285;
-    --secondary-foreground: 0.85 0.01 285;
-    --muted: 0.23 0.025 285;
-    --muted-foreground: 0.58 0.02 285;
+    --secondary: 0.23 0.025 145;
+    --secondary-foreground: 0.85 0.01 105;
+    --muted: 0.23 0.025 145;
+    --muted-foreground: 0.62 0.02 105;
 
-    --accent: 0.7 0.13 300;
-    --accent-foreground: 0.145 0.02 285;
+    --accent: 0.78 0.15 105;
+    --accent-foreground: 0.12 0.02 145;
 
     --destructive: 0.6 0.2 25;
     --destructive-foreground: 0.95 0.01 25;
@@ -165,9 +165,9 @@
     --success: 0.6 0.18 150;
     --warning: 0.75 0.15 85;
 
-    --border: 0.28 0.025 285;
-    --input: 0.28 0.025 285;
-    --ring: 0.68 0.17 290;
+    --border: 0.28 0.025 145;
+    --input: 0.28 0.025 145;
+    --ring: 0.78 0.18 145;
 
     --chart-1: 0.68 0.17 290;
     --chart-2: 0.7 0.13 300;
@@ -175,24 +175,24 @@
     --chart-4: 0.75 0.15 85;
     --chart-5: 0.6 0.2 25;
 
-    --sidebar: 0.18 0.022 285;
-    --sidebar-foreground: 0.95 0.01 285;
-    --sidebar-primary: 0.68 0.17 290;
-    --sidebar-primary-foreground: 0.145 0.02 285;
-    --sidebar-accent: 0.23 0.025 285;
-    --sidebar-accent-foreground: 0.85 0.01 285;
-    --sidebar-border: 0.28 0.025 285;
-    --sidebar-ring: 0.68 0.17 290;
+    --sidebar: 0.18 0.022 145;
+    --sidebar-foreground: 0.95 0.01 105;
+    --sidebar-primary: 0.78 0.18 145;
+    --sidebar-primary-foreground: 0.12 0.02 145;
+    --sidebar-accent: 0.23 0.025 145;
+    --sidebar-accent-foreground: 0.85 0.01 105;
+    --sidebar-border: 0.28 0.025 145;
+    --sidebar-ring: 0.78 0.18 145;
 
     --gradient-primary: linear-gradient(
       135deg,
-      oklch(0.68 0.17 290),
-      oklch(0.62 0.19 305)
+      oklch(0.78 0.18 145),
+      oklch(0.72 0.16 105)
     );
     --gradient-subtle: linear-gradient(
       180deg,
-      oklch(0.18 0.022 285),
-      oklch(0.145 0.02 285)
+      oklch(0.18 0.022 145),
+      oklch(0.145 0.02 145)
     );
 
     /* Phase 2 — provenance labels */

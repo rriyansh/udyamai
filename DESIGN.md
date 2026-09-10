@@ -2,15 +2,15 @@
 
 ## Direction
 
-UdyamAI — a premium minimalist consumer productivity app with a Cosmic Intelligence aesthetic: deep violet/indigo primary, soft surfaces, and restrained luminous gradients that feel like calm intelligence at work. Phase 2 extends this system for hyper-local market intelligence without replacing Phase 1. Phase 3 extends it further for deterministic financial planning and government scheme guidance — same cosmic calm, now with a clear financial color grammar and plain-language explanations for rural/semi-urban entrepreneurs.
+UdyamAI — a premium, approachable business decision platform for rural and semi-urban entrepreneurs: bright brand green, near-black typography, warm off-white surfaces, and restrained gradients that make financial decisions feel clear and trustworthy. The system supports hyper-local market intelligence, deterministic financial planning, government scheme guidance, and plain-language explanations.
 
 ## Tone
 
-Refined, calm, and quietly confident — a luxury-minimal consumer experience that communicates "smart, trustworthy, elevated" without spectacle or cyberpunk noise.
+Clear, grounded, and quietly confident — a modern Indian fintech experience that communicates "smart, trustworthy, practical" without feeling like a generic dashboard.
 
 ## Differentiation
 
-A "cosmic calm" signature: near-white violet-tinted surfaces in light and deep navy-violet in dark, with a single luminous indigo→violet gradient used only on primary actions, key numbers, and hero accents — never as full-page decoration.
+A "grounded intelligence" signature: warm off-white surfaces in light and near-black green-tinted surfaces in dark, with a single bright green→lime gradient used only on primary actions, key numbers, and hero accents — never as full-page decoration.
 
 ## Color Palette
 

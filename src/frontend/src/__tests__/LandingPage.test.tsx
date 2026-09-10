@@ -46,7 +46,7 @@ describe("LandingPage", () => {
   it("shows Get Started and Try Demo buttons plus the three benefits", async () => {
     await renderAt("/");
     expect(
-      await screen.findByRole("button", { name: /Get Started/i }),
+      await screen.findByRole("button", { name: /Start Simulation/i }),
     ).toBeInTheDocument();
     expect(
       screen.getByRole("button", { name: /Try Demo/i }),
@@ -60,7 +60,7 @@ describe("LandingPage", () => {
     const user = userEvent.setup();
     await renderAt("/");
     await user.click(
-      await screen.findByRole("button", { name: /Get Started/i }),
+      await screen.findByRole("button", { name: /Start Simulation/i }),
     );
     await waitFor(() => {
       expect(router.state.location.pathname).toBe("/onboarding");

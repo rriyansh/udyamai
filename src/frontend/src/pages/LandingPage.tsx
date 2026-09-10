@@ -142,14 +142,14 @@ export default function LandingPage() {
               </div>
 
               <h1 className="mt-8 font-display text-4xl font-bold leading-[1.05] tracking-tight text-foreground sm:text-5xl lg:text-6xl">
-                Your Local Business,{" "}
-                <span className="text-gradient">Made Simple.</span>
+                Build a Business That{" "}
+                <span className="text-gradient">Fits Your Reality.</span>
               </h1>
 
               <p className="mt-6 max-w-xl text-lg leading-relaxed text-muted-foreground">
-                UdyamAI turns your business idea into a clear plan — showing you
-                the market, your money, and the financing that fits. Built for
-                rural entrepreneurs, in your language.
+                UdyamAI combines local market intelligence, business feasibility,
+                financial planning, and government financing guidance to help you
+                make better business decisions.
               </p>
 
               <div className="mt-4 inline-flex items-center gap-2 text-sm font-medium text-muted-foreground">
@@ -163,7 +163,7 @@ export default function LandingPage() {
                   onClick={handleGetStarted}
                   data-ocid="get_started_button"
                 >
-                  Get Started
+                  Start Simulation
                   <ArrowRight className="size-4" aria-hidden />
                 </Button>
                 <Button
