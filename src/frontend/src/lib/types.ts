@@ -1,21 +1,9 @@
 export type RiskLevel = "low" | "medium" | "high";
 
-export type BusinessCategoryId =
-  | "dairy"
-  | "poultry"
-  | "goat"
-  | "fisheries"
-  | "organic-farming"
-  | "horticulture"
-  | "food-processing"
-  | "handicrafts"
-  | "tailoring"
-  | "agro-processing"
-  | "beekeeping"
-  | "mushroom"
-  | "animal-feed"
-  | "rural-tourism"
-  | "agri-equipment";
+// An open string so the catalog of searchable business ideas can grow
+// without a closed union; runtime lookups already fall back gracefully
+// for any id not in the curated baseline tables.
+export type BusinessCategoryId = string;
 
 export interface BusinessCategory {
   id: BusinessCategoryId;

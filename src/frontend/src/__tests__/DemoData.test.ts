@@ -18,8 +18,10 @@ describe("demo data", () => {
     expect(DEMO_BADGE).toBe("DEMO DATA");
   });
 
-  it("lists all 15 business categories", () => {
-    expect(BUSINESS_CATEGORIES).toHaveLength(15);
+  it("lists a large, searchable catalog including the original core categories", () => {
+    expect(BUSINESS_CATEGORIES.length).toBeGreaterThanOrEqual(100);
+    const ids = BUSINESS_CATEGORIES.map((c) => c.id);
+    expect(new Set(ids).size).toBe(ids.length);
     const names = BUSINESS_CATEGORIES.map((c) => c.name);
     expect(names).toContain("Dairy Farming");
     expect(names).toContain("Poultry Farming");

@@ -1,15 +1,28 @@
 import http from "node:http";
 
-const port = Number(process.env.OPENAI_PROXY_PORT ?? 8787);
+// Render (and most PaaS) inject PORT; keep OPENAI_PROXY_PORT for local dev.
+const port = Number(process.env.PORT ?? process.env.OPENAI_PROXY_PORT ?? 8787);
 const model = process.env.OPENAI_MODEL ?? "gpt-4o-mini";
 const apiKeys = [1, 2, 3, 4, 5]
   .map((index) => process.env[`OPENAI_API_KEY_${index}`])
   .filter(Boolean);
 
-function sendJson(response, status, body) {
+// Comma-separated list of allowed frontend origins (add your deployed domain).
+const allowedOrigins = (process.env.OPENAI_PROXY_ORIGIN ?? "http://localhost:5173")
+  .split(",")
+  .map((origin) => origin.trim())
+  .filter(Boolean);
+
+function resolveOrigin(requestOrigin) {
+  if (allowedOrigins.includes("*")) return "*";
+  if (requestOrigin && allowedOrigins.includes(requestOrigin)) return requestOrigin;
+  return allowedOrigins[0];
+}
+
+function sendJson(response, status, body, requestOrigin) {
   response.writeHead(status, {
     "Content-Type": "application/json",
-    "Access-Control-Allow-Origin": process.env.OPENAI_PROXY_ORIGIN ?? "http://localhost:5173",
+    "Access-Control-Allow-Origin": resolveOrigin(requestOrigin),
     "Access-Control-Allow-Headers": "Content-Type",
   });
   response.end(JSON.stringify(body));
@@ -49,34 +62,51 @@ async function callOpenAI(messages) {
 }
 
 const server = http.createServer(async (request, response) => {
+  const origin = request.headers.origin;
+
   if (request.method === "OPTIONS") {
-    sendJson(response, 204, {});
+    sendJson(response, 204, {}, origin);
+    return;
+  }
+
+  if (request.method === "GET" && request.url === "/health") {
+    sendJson(response, 200, { status: "ok" }, origin);
     return;
   }
 
   if (request.method !== "POST" || request.url !== "/api/chat") {
-    sendJson(response, 404, { error: "Not found" });
+    sendJson(response, 404, { error: "Not found" }, origin);
     return;
   }
 
   if (apiKeys.length === 0) {
-    sendJson(response, 503, { error: "AI service is not configured" });
+    sendJson(response, 503, { error: "AI service is not configured" }, origin);
     return;
   }
 
   try {
     const payload = JSON.parse(await readBody(request));
     if (!Array.isArray(payload.messages) || payload.messages.length === 0) {
-      sendJson(response, 400, { error: "messages must be a non-empty array" });
+      sendJson(
+        response,
+        400,
+        { error: "messages must be a non-empty array" },
+        origin,
+      );
       return;
     }
     const result = await callOpenAI(payload.messages);
-    sendJson(response, 200, result);
+    sendJson(response, 200, result, origin);
   } catch {
-    sendJson(response, 502, { error: "AI service is temporarily unavailable" });
+    sendJson(
+      response,
+      502,
+      { error: "AI service is temporarily unavailable" },
+      origin,
+    );
   }
 });
 
 server.listen(port, () => {
-  console.log(`OpenAI proxy listening on http://localhost:${port}/api/chat`);
+  console.log(`OpenAI proxy listening on port ${port}`);
 });

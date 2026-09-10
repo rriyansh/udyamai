@@ -8,6 +8,7 @@ import { ProgressSteps } from "@/components/ui/ProgressSteps";
 import { VoiceButton } from "@/components/ui/VoiceButton";
 import { VoiceInput } from "@/components/ui/VoiceInput";
 import { WhyButton } from "@/components/ui/WhyButton";
+import { estimateCategoryOutlook } from "@/lib/analysis-engine";
 import { BUSINESS_CATEGORIES } from "@/lib/demo-data";
 import {
   getCurrentLocation,
@@ -813,7 +814,7 @@ export default function OnboardingPage() {
               type="search"
               value={categoryQuery}
               onChange={(event) => setCategoryQuery(event.target.value)}
-              placeholder="Search business ideas, e.g. tailoring"
+              placeholder="Search 100+ business ideas, e.g. bakery, tailoring, solar"
               aria-label="Search business ideas"
               className="h-11 w-full rounded-full border border-input bg-background pl-11 pr-4 text-sm text-foreground outline-none transition-smooth focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring/30"
               data-ocid="business_search_input"
@@ -825,6 +826,19 @@ export default function OnboardingPage() {
           >
             {categories.map((cat) => {
               const selected = getValue("category") === cat.id;
+              const outlook = estimateCategoryOutlook(cat.id);
+              const demandChipClass =
+                outlook.demandLevel === "High"
+                  ? "risk-low"
+                  : outlook.demandLevel === "Medium"
+                    ? "risk-medium"
+                    : "risk-high";
+              const competitionChipClass =
+                outlook.competitionLevel === "Low"
+                  ? "risk-low"
+                  : outlook.competitionLevel === "Medium"
+                    ? "risk-medium"
+                    : "risk-high";
               return (
                 <button
                   key={cat.id}
@@ -856,6 +870,26 @@ export default function OnboardingPage() {
                     </span>
                     <span className="mt-1 block text-xs leading-relaxed text-muted-foreground">
                       {cat.description}
+                    </span>
+                    <span className="mt-2 flex flex-wrap items-center gap-1.5">
+                      <span
+                        className={cn(
+                          "rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide",
+                          demandChipClass,
+                        )}
+                        data-ocid={`category_demand.${cat.id}`}
+                      >
+                        Demand: {outlook.demandLevel}
+                      </span>
+                      <span
+                        className={cn(
+                          "rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide",
+                          competitionChipClass,
+                        )}
+                        data-ocid={`category_competition.${cat.id}`}
+                      >
+                        Competition: {outlook.competitionLevel}
+                      </span>
                     </span>
                   </span>
                 </button>

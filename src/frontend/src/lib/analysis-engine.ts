@@ -89,6 +89,40 @@ function categoryLabel(category: string): string {
   return CATEGORY_LABEL[category] ?? category;
 }
 
+export type OutlookLevel = "Low" | "Medium" | "High";
+
+export interface CategoryOutlook {
+  demandScore: number;
+  demandLevel: OutlookLevel;
+  competitionScore: number;
+  competitionLevel: OutlookLevel;
+}
+
+function levelFromDemand(score: number): OutlookLevel {
+  return score >= 70 ? "High" : score >= 45 ? "Medium" : "Low";
+}
+
+function levelFromCompetition(score: number): OutlookLevel {
+  return score >= 55 ? "High" : score >= 35 ? "Medium" : "Low";
+}
+
+/**
+ * Deterministic demand/competition outlook for a business category, used to
+ * show more than a static description while choosing a business. Falls back
+ * to the same defaults the rest of the demo engine uses for any category
+ * outside the curated baseline tables \u2014 never invented per category.
+ */
+export function estimateCategoryOutlook(category: string): CategoryOutlook {
+  const demandScore = CATEGORY_DEMAND[category] ?? 65;
+  const competitionScore = CATEGORY_COMPETITION[category] ?? 45;
+  return {
+    demandScore,
+    demandLevel: levelFromDemand(demandScore),
+    competitionScore,
+    competitionLevel: levelFromCompetition(competitionScore),
+  };
+}
+
 function estimate(
   value: number,
   provenance: Provenance,
