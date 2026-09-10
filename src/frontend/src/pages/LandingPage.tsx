@@ -9,7 +9,6 @@ import {
   Clock3,
   Landmark,
   PiggyBank,
-  Sparkles,
   TrendingUp,
 } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
@@ -167,32 +166,16 @@ export default function LandingPage() {
               </div>
             </motion.div>
 
-            {/* Abstract cosmic graphic */}
+            {/* Brand logo anchor */}
             <motion.div
               initial={{ opacity: 0, scale: 0.92 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.8, ease: "easeOut", delay: 0.15 }}
               className="relative mx-auto hidden aspect-square w-full max-w-md lg:block"
-              aria-hidden
             >
               <div className="absolute inset-0 flex items-center justify-center">
-                <div className="relative flex size-40 items-center justify-center rounded-full bg-gradient-primary text-primary-foreground shadow-elevated">
-                  <Sparkles className="size-14" />
-                  <span className="absolute -inset-6 rounded-full bg-gradient-primary opacity-25 blur-2xl" />
-                </div>
+                <BrandMark className="size-64 rounded-[3rem] shadow-elevated" />
               </div>
-              {Array.from({ length: 12 }, (_, i) => `ray-${i}`).map((id, i) => {
-                const angle = (i / 12) * 360;
-                return (
-                  <span
-                    key={id}
-                    className="absolute left-1/2 top-1/2 h-px w-40 origin-left bg-gradient-to-r from-primary/50 to-transparent"
-                    style={{
-                      transform: `rotate(${angle}deg) translateX(20px)`,
-                    }}
-                  />
-                );
-              })}
             </motion.div>
           </div>
         </section>
