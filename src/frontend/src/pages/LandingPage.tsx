@@ -229,19 +229,7 @@ export default function LandingPage() {
           <span className="font-display font-semibold text-foreground">
             UdyamAI
           </span>
-          <span>
-            © {new Date().getFullYear()}. Built with love using{" "}
-            <a
-              href={`https://caffeine.ai?utm_source=caffeine-footer&utm_medium=referral&utm_content=${encodeURIComponent(
-                window.location.hostname,
-              )}`}
-              target="_blank"
-              rel="noreferrer"
-              className="font-medium text-primary underline-offset-4 hover:underline"
-            >
-              caffeine.ai
-            </a>
-          </span>
+          <span>© {new Date().getFullYear()}. Built by Team FiNova</span>
         </div>
       </footer>
     </div>
