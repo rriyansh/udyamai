@@ -10,7 +10,11 @@ import { VoiceInput } from "@/components/ui/VoiceInput";
 import { WhyButton } from "@/components/ui/WhyButton";
 import { BUSINESS_CATEGORIES } from "@/lib/demo-data";
 import { useOnboardingStore } from "@/lib/onboarding-store";
-import type { BusinessCategoryId, OnboardingProfile } from "@/lib/types";
+import type {
+  BusinessCategoryId,
+  OnboardingDraft,
+  OnboardingProfile,
+} from "@/lib/types";
 import { cn } from "@/lib/utils";
 import type { VoiceLanguage } from "@/lib/voice-service";
 import { useNavigate } from "@tanstack/react-router";
@@ -38,13 +42,14 @@ type StepKey =
   | "state"
   | "margin"
   | "category"
-  | "land"
+  | "landAvailability"
+  | "landAreaSqFt"
   | "experience"
   | "investment"
   | "sales"
   | "loan";
 
-type StepKind = "text" | "number" | "category" | "location";
+type StepKind = "text" | "number" | "category" | "location" | "choice";
 
 const VOICE_COPY: Record<
   VoiceLanguage,
@@ -167,6 +172,7 @@ const STEPS: StepConfig[] = [
     description: "Start typing and choose from the suggestions.",
     kind: "location",
     placeholder: "e.g. Rampur",
+    optional: true,
   },
   {
     key: "block",
@@ -210,14 +216,21 @@ const STEPS: StepConfig[] = [
     kind: "category",
   },
   {
-    key: "land",
+    key: "landAvailability",
     label: "Land",
     question: "Do you have land or assets to use?",
-    description: "Optional — tell us what you already have.",
+    description:
+      "Choose yes or no. We will suggest options if you do not have land.",
+    kind: "choice",
+  },
+  {
+    key: "landAreaSqFt",
+    label: "Space",
+    question: "How many square feet of land or space do you have?",
+    description: "Enter the usable area available for your business.",
     kind: "number",
-    prefix: "acres",
-    placeholder: "e.g. 2",
-    optional: true,
+    prefix: "sq. ft.",
+    placeholder: "e.g. 200",
   },
   {
     key: "experience",
@@ -587,10 +600,14 @@ type ConfirmState =
 export default function OnboardingPage() {
   const navigate = useNavigate();
   const setProfile = useOnboardingStore((s) => s.setProfile);
+  const savedDraft = useOnboardingStore((s) => s.draft);
+  const savedStep = useOnboardingStore((s) => s.onboardingStep);
+  const updateStoredDraft = useOnboardingStore((s) => s.updateDraft);
+  const setStoredStep = useOnboardingStore((s) => s.setOnboardingStep);
 
-  const [stepIndex, setStepIndex] = useState(0);
+  const [stepIndex, setStepIndex] = useState(savedStep);
   const [inputMode, setInputMode] = useState<"type" | "talk">("type");
-  const [draft, setDraft] = useState<Partial<OnboardingProfile>>({});
+  const [draft, setDraft] = useState<OnboardingDraft>(savedDraft);
   const [error, setError] = useState<string | null>(null);
   const [confirm, setConfirm] = useState<ConfirmState>(null);
   const [categoryQuery, setCategoryQuery] = useState("");
@@ -598,11 +615,23 @@ export default function OnboardingPage() {
     useState("");
   const [voiceLanguage, setVoiceLanguage] = useState<VoiceLanguage>("en-IN");
 
-  const step = STEPS[stepIndex];
-  const isLast = stepIndex === STEPS.length - 1;
+  const activeSteps = useMemo(
+    () =>
+      STEPS.filter(
+        (candidate) =>
+          candidate.key !== "landAreaSqFt" || draft.landAvailability === "yes",
+      ),
+    [draft.landAvailability],
+  );
+  const safeStepIndex = Math.min(stepIndex, activeSteps.length - 1);
+  const step = activeSteps[safeStepIndex];
+  const isLast = safeStepIndex === activeSteps.length - 1;
   const copy = VOICE_COPY[voiceLanguage][step.key] ?? step;
 
-  const stepLabels = useMemo(() => STEPS.map((s) => s.label), []);
+  const stepLabels = useMemo(
+    () => activeSteps.map((s) => s.label),
+    [activeSteps],
+  );
 
   const getValue = (key: StepKey): string => {
     const v = draft[key as keyof OnboardingProfile];
@@ -611,6 +640,7 @@ export default function OnboardingPage() {
 
   const setValue = (key: StepKey, value: string) => {
     setDraft((d) => ({ ...d, [key]: value }));
+    updateStoredDraft({ [key]: value });
   };
 
   const suggestions = useMemo(() => {
@@ -656,7 +686,8 @@ export default function OnboardingPage() {
       return true;
     }
     if (step.kind === "number") {
-      if (!value || parseNumber(value) <= 0) {
+      const allowsZero = key === "experience";
+      if (!value || (!allowsZero && parseNumber(value) <= 0)) {
         setError("Please enter a valid amount to continue.");
         return false;
       }
@@ -681,7 +712,15 @@ export default function OnboardingPage() {
         state: getValue("state").trim(),
         marginCapital: parseNumber(getValue("margin")),
         businessCategory: getValue("category") as BusinessCategoryId,
-        landAssets: parseNumber(getValue("land")),
+        landAssets:
+          draft.landAvailability === "yes"
+            ? parseNumber(getValue("landAreaSqFt"))
+            : 0,
+        hasLand: draft.landAvailability === "yes",
+        landAreaSqFt:
+          draft.landAvailability === "yes"
+            ? parseNumber(getValue("landAreaSqFt"))
+            : 0,
         experienceYears: parseNumber(getValue("experience")),
         expectedInvestment: parseNumber(getValue("investment")),
         expectedMonthlySales: parseNumber(getValue("sales")),
@@ -691,12 +730,16 @@ export default function OnboardingPage() {
       navigate({ to: "/dashboard" });
       return;
     }
-    setStepIndex((i) => i + 1);
+    const nextStep = Math.min(stepIndex + 1, activeSteps.length - 1);
+    setStepIndex(nextStep);
+    setStoredStep(nextStep);
   };
 
   const handleBack = () => {
     setError(null);
-    setStepIndex((i) => Math.max(0, i - 1));
+    const previousStep = Math.max(0, stepIndex - 1);
+    setStepIndex(previousStep);
+    setStoredStep(previousStep);
   };
 
   const handleVoiceResult = (transcript: string) => {
@@ -795,6 +838,38 @@ export default function OnboardingPage() {
       );
     }
 
+    if (step.kind === "choice") {
+      const selected = getValue(step.key);
+      return (
+        <div className="grid gap-3 sm:grid-cols-2" aria-label={step.question}>
+          {[
+            { value: "yes", label: "Yes, I have land or space" },
+            { value: "no", label: "No, I need a space" },
+          ].map((option) => (
+            <button
+              key={option.value}
+              type="button"
+              aria-pressed={selected === option.value}
+              onClick={() => {
+                setValue(step.key, option.value);
+                if (option.value === "no") setValue("landAreaSqFt", "");
+                setError(null);
+              }}
+              className={cn(
+                "rounded-2xl border p-4 text-left text-sm font-semibold transition-smooth focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+                selected === option.value
+                  ? "border-primary bg-primary/5 ring-1 ring-primary"
+                  : "border-border bg-card hover:border-primary/40",
+              )}
+              data-ocid={`land_option.${option.value}`}
+            >
+              {option.label}
+            </button>
+          ))}
+        </div>
+      );
+    }
+
     if (step.kind === "location") {
       return (
         <div className="flex flex-col gap-1.5">
@@ -866,7 +941,7 @@ export default function OnboardingPage() {
         {/* Progress */}
         <ProgressSteps
           steps={stepLabels}
-          currentStep={stepIndex}
+          currentStep={safeStepIndex}
           className="mb-8"
           data-ocid="onboarding_progress"
         />

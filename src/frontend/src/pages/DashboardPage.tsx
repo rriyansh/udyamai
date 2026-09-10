@@ -322,6 +322,25 @@ export default function DashboardPage() {
         </Button>
       </header>
 
+      {profile?.hasLand === false ? (
+        <Card data-ocid="no_land_guidance">
+          <CardHeader>
+            <CardTitle>Business ideas without your own land</CardTitle>
+            <CardDescription>
+              You can still start. Consider a home-based service, rented shop,
+              shared workspace, mobile service, or a partnership with an
+              existing landowner.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="grid gap-2 text-sm text-foreground sm:grid-cols-2">
+            <p>• Tailoring or repair services from home</p>
+            <p>• Food processing using rented/shared space</p>
+            <p>• Digital services or delivery-based work</p>
+            <p>• Contract farming or equipment rental</p>
+          </CardContent>
+        </Card>
+      ) : null}
+
       {/* Hyper-local analysis */}
       {current ? (
         <HyperLocalSummaryCard analysis={current} source={analysisSource} />

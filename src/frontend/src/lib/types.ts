@@ -37,6 +37,12 @@ export interface OnboardingProfile {
   expectedInvestment: number;
   expectedMonthlySales: number;
   expectedLoanRequirement: number;
+  hasLand?: boolean;
+  landAreaSqFt?: number;
+}
+
+export interface OnboardingDraft extends Partial<OnboardingProfile> {
+  landAvailability?: "yes" | "no";
 }
 
 export type AnalysisStatus = "completed" | "in-progress" | "draft";

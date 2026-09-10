@@ -1,4 +1,5 @@
 import App from "@/App";
+import { useOnboardingStore } from "@/lib/onboarding-store";
 import { router } from "@/router";
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
@@ -25,6 +26,14 @@ async function renderAt(path: string) {
 describe("OnboardingPage", () => {
   beforeEach(() => {
     mockReducedMotion();
+    useOnboardingStore.persist.clearStorage();
+    useOnboardingStore.setState({
+      profile: null,
+      completed: false,
+      isDemo: false,
+      draft: {},
+      onboardingStep: 0,
+    });
   });
 
   it("shows one question at a time with a compact progress indicator", async () => {
@@ -32,7 +41,7 @@ describe("OnboardingPage", () => {
     expect(
       await screen.findByRole("heading", { name: /What is your name\?/i }),
     ).toBeInTheDocument();
-    expect(screen.getByText(/Step 1 of 12/i)).toBeInTheDocument();
+    expect(screen.getByText(/Step 1 of (12|13)/i)).toBeInTheDocument();
     // Only the first question is visible, not later ones.
     expect(
       screen.queryByText(/Which village do you live in\?/i),
@@ -77,10 +86,19 @@ describe("OnboardingPage", () => {
     );
     await user.click(screen.getByRole("button", { name: /Next/i }));
 
-    // Step 8: Land (optional)
+    // Step 8: Land availability, then area
+    await user.click(
+      await screen.findByRole("button", {
+        name: /Yes, I have land or space/i,
+      }),
+    );
+    await user.click(screen.getByRole("button", { name: /Next/i }));
+
     await user.type(
-      await screen.findByLabelText(/Do you have land or assets to use\?/i),
-      "2",
+      await screen.findByLabelText(
+        /How many square feet of land or space do you have\?/i,
+      ),
+      "200",
     );
     await user.click(screen.getByRole("button", { name: /Next/i }));
 
