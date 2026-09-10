@@ -1,3 +1,4 @@
+import { BrandMark } from "@/components/BrandMark";
 import { Button } from "@/components/Button";
 import { Card } from "@/components/Card";
 import { AIExplanation } from "@/components/ui/AIExplanation";
@@ -11,6 +12,7 @@ import { BUSINESS_CATEGORIES } from "@/lib/demo-data";
 import { useOnboardingStore } from "@/lib/onboarding-store";
 import type { BusinessCategoryId, OnboardingProfile } from "@/lib/types";
 import { cn } from "@/lib/utils";
+import type { VoiceLanguage } from "@/lib/voice-service";
 import { useNavigate } from "@tanstack/react-router";
 import {
   ArrowLeft,
@@ -43,6 +45,41 @@ type StepKey =
   | "loan";
 
 type StepKind = "text" | "number" | "category" | "location";
+
+const VOICE_COPY: Record<
+  VoiceLanguage,
+  Partial<Record<StepKey, { question: string; description?: string }>>
+> = {
+  "en-IN": {},
+  "hi-IN": {
+    name: {
+      question: "आपका नाम क्या है?",
+      description: "हम आपका प्लान आपके नाम से बनाएंगे।",
+    },
+    village: {
+      question: "आप किस गांव में रहते हैं?",
+      description: "सुझावों में से सही जगह चुनें।",
+    },
+    category: {
+      question: "आप कौन सा व्यवसाय शुरू करना चाहते हैं?",
+      description: "अपने विचार के सबसे करीब विकल्प चुनें।",
+    },
+  },
+  hinglish: {
+    name: {
+      question: "Aapka naam kya hai?",
+      description: "Hum aapke naam se plan banayenge.",
+    },
+    village: {
+      question: "Aap kis gaon mein rehte hain?",
+      description: "Suggestions mein se sahi jagah choose karein.",
+    },
+    category: {
+      question: "Aap kaunsa business start karna chahte hain?",
+      description: "Apne idea ke sabse kareeb option choose karein.",
+    },
+  },
+};
 
 interface HelpTopic {
   title: string;
@@ -559,9 +596,11 @@ export default function OnboardingPage() {
   const [categoryQuery, setCategoryQuery] = useState("");
   const [dismissedLocationSuggestion, setDismissedLocationSuggestion] =
     useState("");
+  const [voiceLanguage, setVoiceLanguage] = useState<VoiceLanguage>("en-IN");
 
   const step = STEPS[stepIndex];
   const isLast = stepIndex === STEPS.length - 1;
+  const copy = VOICE_COPY[voiceLanguage][step.key] ?? step;
 
   const stepLabels = useMemo(() => STEPS.map((s) => s.label), []);
 
@@ -746,7 +785,7 @@ export default function OnboardingPage() {
     if (step.kind === "number") {
       return (
         <NumberField
-          label={step.question}
+          label={copy.question}
           value={getValue(step.key)}
           onChange={(v) => setValue(step.key, v)}
           placeholder={step.placeholder}
@@ -763,8 +802,9 @@ export default function OnboardingPage() {
             <VoiceInput
               value={getValue(step.key)}
               onChange={(v) => setValue(step.key, v)}
-              label={step.question}
+              label={copy.question}
               placeholder={step.placeholder}
+              lang={voiceLanguage}
               className="w-full"
             />
             {suggestions.length > 0 ? (
@@ -797,8 +837,9 @@ export default function OnboardingPage() {
       <VoiceInput
         value={getValue(step.key)}
         onChange={(v) => setValue(step.key, v)}
-        label={step.question}
+        label={copy.question}
         placeholder={step.placeholder}
+        lang={voiceLanguage}
         className="w-full"
       />
     );
@@ -810,9 +851,7 @@ export default function OnboardingPage() {
       <header className="border-b border-border bg-card">
         <div className="mx-auto flex max-w-2xl items-center justify-between px-5 py-4">
           <div className="flex items-center gap-2.5">
-            <span className="flex size-9 items-center justify-center rounded-xl bg-gradient-primary text-primary-foreground shadow-card">
-              <Sparkles className="size-4" aria-hidden />
-            </span>
+            <BrandMark />
             <span className="font-display text-lg font-bold tracking-tight text-foreground">
               UdyamAI
             </span>
@@ -873,22 +912,45 @@ export default function OnboardingPage() {
           </button>
         </div>
 
+        <div className="mb-6 flex items-center gap-3 rounded-2xl border border-border bg-card p-3 sm:justify-end">
+          <label
+            htmlFor="onboarding-voice-language"
+            className="text-sm font-medium text-foreground"
+          >
+            Voice language
+          </label>
+          <select
+            id="onboarding-voice-language"
+            value={voiceLanguage}
+            onChange={(event) =>
+              setVoiceLanguage(event.target.value as VoiceLanguage)
+            }
+            className="h-10 min-w-0 flex-1 rounded-full border border-input bg-background px-3 text-sm text-foreground outline-none focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring/30 sm:flex-none"
+            data-ocid="onboarding_voice_language"
+          >
+            <option value="en-IN">English</option>
+            <option value="hinglish">Hinglish</option>
+            <option value="hi-IN">Hindi</option>
+          </select>
+        </div>
+
         <Card className="p-6 sm:p-8">
           {/* Question + listen */}
           <div className="flex items-start justify-between gap-3">
             <div className="min-w-0">
               <h2 className="font-display text-xl font-semibold tracking-tight text-foreground sm:text-2xl">
-                {step.question}
+                {copy.question}
               </h2>
-              {step.description ? (
+              {(copy.description ?? step.description) ? (
                 <p className="mt-1.5 text-sm text-muted-foreground">
-                  {step.description}
+                  {copy.description ?? step.description}
                 </p>
               ) : null}
             </div>
             <ListenButton
-              text={`${step.question} ${step.description ?? ""}`}
+              text={`${copy.question} ${copy.description ?? step.description ?? ""}`}
               label=""
+              lang={voiceLanguage}
               className="size-9 shrink-0 rounded-full p-0"
             />
           </div>
@@ -902,6 +964,7 @@ export default function OnboardingPage() {
                 <VoiceButton
                   onResult={handleVoiceResult}
                   label="Speak your answer"
+                  lang={voiceLanguage}
                   className="h-14 px-6 text-base"
                 />
                 {getValue(step.key) ? (

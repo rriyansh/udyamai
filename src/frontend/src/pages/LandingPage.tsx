@@ -1,3 +1,4 @@
+import { BrandMark } from "@/components/BrandMark";
 import { Button } from "@/components/Button";
 import { Card } from "@/components/Card";
 import { DEMO_PROFILE } from "@/lib/demo-data";
@@ -43,18 +44,7 @@ const BENEFITS = [
 
 function CosmicMark({ size = "lg" }: { size?: "lg" | "sm" }) {
   const dims = size === "lg" ? "size-16" : "size-9";
-  const icon = size === "lg" ? "size-8" : "size-4";
-  return (
-    <span
-      className={`relative inline-flex ${dims} items-center justify-center rounded-2xl bg-gradient-primary text-primary-foreground shadow-card`}
-    >
-      <span
-        aria-hidden
-        className="absolute -inset-2 rounded-3xl bg-gradient-primary opacity-30 blur-xl"
-      />
-      <Sparkles className={`relative ${icon}`} aria-hidden />
-    </span>
-  );
+  return <BrandMark className={dims} />;
 }
 
 export default function LandingPage() {
