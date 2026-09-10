@@ -17,7 +17,9 @@ import {
   ArrowRight,
   Check,
   Keyboard,
+  MapPin,
   Mic,
+  Search,
   Sparkles,
 } from "lucide-react";
 import { useId, useMemo, useState } from "react";
@@ -554,6 +556,9 @@ export default function OnboardingPage() {
   const [draft, setDraft] = useState<Partial<OnboardingProfile>>({});
   const [error, setError] = useState<string | null>(null);
   const [confirm, setConfirm] = useState<ConfirmState>(null);
+  const [categoryQuery, setCategoryQuery] = useState("");
+  const [dismissedLocationSuggestion, setDismissedLocationSuggestion] =
+    useState("");
 
   const step = STEPS[stepIndex];
   const isLast = stepIndex === STEPS.length - 1;
@@ -573,11 +578,13 @@ export default function OnboardingPage() {
     if (step.kind !== "location") return [];
     const raw = draft[step.key as keyof OnboardingProfile];
     const value = raw === undefined || raw === null ? "" : String(raw);
+    if (`${step.key}:${value}` === dismissedLocationSuggestion) return [];
     return uniqueValues(LOCATIONS, step.key as keyof LocationEntry, value);
-  }, [step, draft]);
+  }, [step, draft, dismissedLocationSuggestion]);
 
   const handleSelectSuggestion = (value: string) => {
     setValue(step.key, value);
+    setDismissedLocationSuggestion(`${step.key}:${value}`);
     const matches = matchesFor(
       LOCATIONS,
       step.key as keyof LocationEntry,
@@ -659,49 +666,79 @@ export default function OnboardingPage() {
 
   const renderInput = () => {
     if (step.kind === "category") {
+      const query = categoryQuery.trim().toLowerCase();
+      const categories = query
+        ? BUSINESS_CATEGORIES.filter(
+            (cat) =>
+              cat.name.toLowerCase().includes(query) ||
+              cat.description.toLowerCase().includes(query),
+          )
+        : BUSINESS_CATEGORIES;
       return (
-        <div
-          className="grid grid-cols-1 gap-3 sm:grid-cols-2"
-          aria-label="Business category"
-        >
-          {BUSINESS_CATEGORIES.map((cat) => {
-            const selected = getValue("category") === cat.id;
-            return (
-              <button
-                key={cat.id}
-                type="button"
-                aria-pressed={selected}
-                onClick={() => {
-                  setValue("category", cat.id);
-                  setError(null);
-                }}
-                className={cn(
-                  "flex items-start gap-3 rounded-2xl border p-4 text-left transition-smooth focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",
-                  selected
-                    ? "border-primary bg-primary/5 ring-1 ring-primary"
-                    : "border-border bg-card hover:border-primary/40",
-                )}
-                data-ocid={`category_option.${cat.id}`}
-              >
-                <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-accent/15 text-lg">
-                  {cat.icon}
-                </span>
-                <span className="min-w-0 flex-1">
-                  <span className="flex items-center justify-between gap-2">
-                    <span className="font-display text-sm font-semibold text-foreground">
-                      {cat.name}
+        <div className="space-y-4">
+          <div className="relative">
+            <Search
+              className="pointer-events-none absolute left-4 top-1/2 size-4 -translate-y-1/2 text-muted-foreground"
+              aria-hidden
+            />
+            <input
+              type="search"
+              value={categoryQuery}
+              onChange={(event) => setCategoryQuery(event.target.value)}
+              placeholder="Search business ideas, e.g. tailoring"
+              aria-label="Search business ideas"
+              className="h-11 w-full rounded-full border border-input bg-background pl-11 pr-4 text-sm text-foreground outline-none transition-smooth focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring/30"
+              data-ocid="business_search_input"
+            />
+          </div>
+          <div
+            className="grid grid-cols-1 gap-3 sm:grid-cols-2"
+            aria-label="Business category"
+          >
+            {categories.map((cat) => {
+              const selected = getValue("category") === cat.id;
+              return (
+                <button
+                  key={cat.id}
+                  type="button"
+                  aria-pressed={selected}
+                  onClick={() => {
+                    setValue("category", cat.id);
+                    setError(null);
+                  }}
+                  className={cn(
+                    "flex items-start gap-3 rounded-2xl border p-4 text-left transition-smooth focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",
+                    selected
+                      ? "border-primary bg-primary/5 ring-1 ring-primary"
+                      : "border-border bg-card hover:border-primary/40",
+                  )}
+                  data-ocid={`category_option.${cat.id}`}
+                >
+                  <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-accent/15 text-lg">
+                    {cat.icon}
+                  </span>
+                  <span className="min-w-0 flex-1">
+                    <span className="flex items-center justify-between gap-2">
+                      <span className="font-display text-sm font-semibold text-foreground">
+                        {cat.name}
+                      </span>
+                      {selected ? (
+                        <Check className="size-4 shrink-0 text-primary" />
+                      ) : null}
                     </span>
-                    {selected ? (
-                      <Check className="size-4 shrink-0 text-primary" />
-                    ) : null}
+                    <span className="mt-1 block text-xs leading-relaxed text-muted-foreground">
+                      {cat.description}
+                    </span>
                   </span>
-                  <span className="mt-1 block text-xs leading-relaxed text-muted-foreground">
-                    {cat.description}
-                  </span>
-                </span>
-              </button>
-            );
-          })}
+                </button>
+              );
+            })}
+          </div>
+          {categories.length === 0 ? (
+            <p className="rounded-2xl border border-dashed border-border p-4 text-center text-sm text-muted-foreground">
+              No matching business ideas found. Try another word.
+            </p>
+          ) : null}
         </div>
       );
     }
@@ -743,7 +780,7 @@ export default function OnboardingPage() {
                       className="flex w-full items-center gap-2 px-4 py-3 text-left text-sm text-foreground transition-smooth hover:bg-accent focus-visible:bg-accent focus-visible:outline-none"
                       data-ocid={`location_suggestion.${s}`}
                     >
-                      <Sparkles className="size-4 shrink-0 text-primary" />
+                      <MapPin className="size-4 shrink-0 text-primary" />
                       {s}
                     </button>
                   </li>
