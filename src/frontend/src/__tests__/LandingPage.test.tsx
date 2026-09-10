@@ -34,11 +34,13 @@ describe("LandingPage", () => {
     expect((await screen.findAllByText("UdyamAI")).length).toBeGreaterThan(0);
     expect(
       screen.getByRole("heading", {
-        name: /Your Local Business, Made Simple/i,
+        name: /Build a Business That Fits Your Reality/i,
       }),
     ).toBeInTheDocument();
     expect(
-      screen.getByText(/turns your business idea into a clear plan/i),
+      screen.getByText(
+        /combines local market intelligence, business feasibility/i,
+      ),
     ).toBeInTheDocument();
     expect(screen.getByText(/Takes about 3 minutes/i)).toBeInTheDocument();
   });

@@ -147,9 +147,9 @@ export default function LandingPage() {
               </h1>
 
               <p className="mt-6 max-w-xl text-lg leading-relaxed text-muted-foreground">
-                UdyamAI combines local market intelligence, business feasibility,
-                financial planning, and government financing guidance to help you
-                make better business decisions.
+                UdyamAI combines local market intelligence, business
+                feasibility, financial planning, and government financing
+                guidance to help you make better business decisions.
               </p>
 
               <div className="mt-4 inline-flex items-center gap-2 text-sm font-medium text-muted-foreground">

@@ -6,3 +6,6 @@ dist/
 .pnpm-store/
 .cache/
 .icp/
+.env
+.env.*
+!.env.example

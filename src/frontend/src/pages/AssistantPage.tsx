@@ -29,7 +29,7 @@ interface UiMessage {
   id: string;
   role: ChatRole;
   content: string;
-  source?: "backend" | "demo";
+  source?: "backend" | "openai" | "demo";
   retryable?: boolean;
   question?: string;
 }
@@ -174,6 +174,10 @@ export default function AssistantPage() {
                         {message.source === "demo" ? (
                           <span className="mb-1.5 inline-flex items-center rounded-full bg-warning/15 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-warning">
                             Demo data
+                          </span>
+                        ) : message.source === "openai" ? (
+                          <span className="mb-1.5 inline-flex items-center rounded-full bg-primary/15 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-primary">
+                            OpenAI explanation
                           </span>
                         ) : null}
                         <p className="whitespace-pre-wrap break-words">

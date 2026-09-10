@@ -35,7 +35,7 @@ describe("all 12 pages render without crashing", () => {
     await renderAt("/");
     expect(
       await screen.findByRole("heading", {
-        name: /Your Local Business, Made Simple/i,
+        name: /Build a Business That Fits Your Reality/i,
       }),
     ).toBeInTheDocument();
   });

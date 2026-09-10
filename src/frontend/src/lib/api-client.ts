@@ -8,6 +8,7 @@ import {
   computeFinancialPlan as engineComputeFinancialPlan,
   computeFinancing as engineComputeFinancing,
 } from "@/lib/finance-engine";
+import { askOpenAI } from "@/lib/openai-service";
 import type {
   Amortization,
   AnalysisInput,
@@ -60,6 +61,7 @@ import { useActor } from "@caffeineai/core-infrastructure";
  */
 
 export type DataSource = "backend" | "demo";
+export type ChatSource = "backend" | "openai" | "demo";
 
 export interface AnalysisRunResult {
   analysis: HyperLocalAnalysis;
@@ -68,7 +70,7 @@ export interface AnalysisRunResult {
 
 export interface ChatRunResult {
   reply: string;
-  source: DataSource;
+  source: ChatSource;
 }
 
 /* ---- backend -> frontend type mappers ---------------------------- */
@@ -843,6 +845,19 @@ export function useAnalysisApi() {
     request: ChatRequest,
     analysis: HyperLocalAnalysis | null,
   ): Promise<ChatRunResult> {
+    if (analysis) {
+      try {
+        const reply = await askOpenAI(
+          request.message,
+          request.history,
+          analysis,
+        );
+        if (reply) return { reply, source: "openai" };
+      } catch {
+        // Keep the backend and demo fallbacks available when the proxy is down.
+      }
+    }
+
     // Ground the backend reply in the backend's stored Nat analysis id. When
     // the analysis is demo data (no backendId), keep the demo reply path.
     const backendId = analysis?.backendId;

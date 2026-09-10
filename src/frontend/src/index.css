@@ -22,7 +22,7 @@
 
 @layer base {
   :root {
-    --font-display: "Space Grotesk", sans-serif;
+    --font-display: "Comic Relief", "Space Grotesk", sans-serif;
     --font-body: "General Sans", sans-serif;
     --font-mono: "Geist Mono", monospace;
     --radius: 0.75rem;

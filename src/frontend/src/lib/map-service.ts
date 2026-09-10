@@ -20,6 +20,89 @@ export interface MapServiceResult {
   error: string | null;
 }
 
+interface GoogleMapsApi {
+  maps: {
+    Map: new (
+      element: HTMLElement,
+      options: { center: { lat: number; lng: number }; zoom: number },
+    ) => unknown;
+    Marker: new (options: {
+      map: unknown;
+      position: { lat: number; lng: number };
+      title?: string;
+    }) => unknown;
+    Circle: new (options: {
+      map: unknown;
+      center: { lat: number; lng: number };
+      radius: number;
+      fillColor: string;
+      fillOpacity: number;
+      strokeColor: string;
+      strokeOpacity: number;
+    }) => unknown;
+  };
+}
+
+const googleMapsKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY as
+  | string
+  | undefined;
+
+export function hasGoogleMapsKey(): boolean {
+  return Boolean(googleMapsKey);
+}
+
+export function loadGoogleMaps(): Promise<GoogleMapsApi | null> {
+  if (!googleMapsKey || typeof document === "undefined") {
+    return Promise.resolve(null);
+  }
+
+  const existing = (window as Window & { google?: GoogleMapsApi }).google;
+  if (existing?.maps) return Promise.resolve(existing);
+
+  return new Promise((resolve) => {
+    const script = document.createElement("script");
+    script.src = `https://maps.googleapis.com/maps/api/js?key=${encodeURIComponent(googleMapsKey)}`;
+    script.async = true;
+    script.defer = true;
+    script.onload = () => {
+      const google = (window as Window & { google?: GoogleMapsApi }).google;
+      resolve(google?.maps ? google : null);
+    };
+    script.onerror = () => resolve(null);
+    document.head.appendChild(script);
+  });
+}
+
+export function renderGoogleMap(
+  api: GoogleMapsApi,
+  element: HTMLElement,
+  mapData: MapData,
+  radiusKm: number,
+): void {
+  const center = mapData.userLocation;
+  const map = new api.maps.Map(element, {
+    center,
+    zoom: radiusKm === 5 ? 13 : 11,
+  });
+  new api.maps.Marker({ map, position: center, title: "Your location" });
+  new api.maps.Circle({
+    map,
+    center,
+    radius: radiusKm * 1000,
+    fillColor: "#8bd646",
+    fillOpacity: 0.12,
+    strokeColor: "#4c8d18",
+    strokeOpacity: 0.6,
+  });
+  for (const competitor of mapData.competitors) {
+    new api.maps.Marker({
+      map,
+      position: { lat: competitor.lat, lng: competitor.lng },
+      title: competitor.name,
+    });
+  }
+}
+
 export function getCurrentLocation(): Promise<MapServiceResult> {
   return new Promise((resolve) => {
     if (typeof navigator === "undefined" || !("geolocation" in navigator)) {

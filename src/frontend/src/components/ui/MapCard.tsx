@@ -1,9 +1,14 @@
 import { Card } from "@/components/Card";
-import { getCurrentLocation } from "@/lib/map-service";
+import {
+  getCurrentLocation,
+  hasGoogleMapsKey,
+  loadGoogleMaps,
+  renderGoogleMap,
+} from "@/lib/map-service";
 import type { MapData, Radius } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import { MapPin, Navigation } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 interface MapCardProps {
   title: string;
@@ -46,6 +51,8 @@ export function MapCard({
   // clearly label it as a demo location — real-world data is never faked.
   const [geo, setGeo] = useState<{ lat: number; lng: number } | null>(null);
   const [geoError, setGeoError] = useState<string | null>(null);
+  const googleMapRef = useRef<HTMLDivElement>(null);
+  const [googleMapReady, setGoogleMapReady] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -63,6 +70,25 @@ export function MapCard({
       cancelled = true;
     };
   }, []);
+
+  useEffect(() => {
+    if (!hasGoogleMapsKey() || !googleMapRef.current) return;
+    let cancelled = false;
+    void loadGoogleMaps().then((api) => {
+      if (!cancelled && api && googleMapRef.current) {
+        renderGoogleMap(
+          api,
+          googleMapRef.current,
+          mapData,
+          radius === "5km" ? 5 : 10,
+        );
+        setGoogleMapReady(true);
+      }
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [mapData, radius]);
 
   const userLocation = geo ?? mapData.userLocation;
   const usingDemoLocation = geo === null;
@@ -113,9 +139,13 @@ export function MapCard({
       </div>
 
       <div className="relative h-56 w-full overflow-hidden bg-muted/40">
+        <div
+          ref={googleMapRef}
+          className={cn("h-full w-full", !googleMapReady && "hidden")}
+        />
         <svg
           viewBox="0 0 400 240"
-          className="h-full w-full"
+          className={cn("h-full w-full", googleMapReady && "hidden")}
           preserveAspectRatio="xMidYMid slice"
           aria-hidden="true"
         >

@@ -13,7 +13,7 @@ import type { ChatMessage, ChatRequest, HyperLocalAnalysis } from "@/lib/types";
 
 export interface AskResult {
   reply: string;
-  source: "backend" | "demo";
+  source: "backend" | "openai" | "demo";
 }
 
 export function useAiService() {
