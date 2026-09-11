@@ -31,6 +31,7 @@ interface GeocoderResult {
 
 interface GoogleMapsApi {
   maps: {
+    importLibrary?: (name: string) => Promise<Record<string, unknown>>;
     Map: new (
       element: HTMLElement,
       options: { center: { lat: number; lng: number }; zoom: number },
@@ -117,7 +118,7 @@ export function loadGoogleMaps(): Promise<GoogleMapsApi | null> {
   if (googleMapsLoadPromise) return googleMapsLoadPromise;
   googleMapsLoadPromise = new Promise((resolve) => {
     const script = document.createElement("script");
-    script.src = `https://maps.googleapis.com/maps/api/js?key=${encodeURIComponent(googleMapsKey)}&v=weekly`;
+    script.src = `https://maps.googleapis.com/maps/api/js?key=${encodeURIComponent(googleMapsKey)}&v=weekly&libraries=maps3d`;
     script.async = true;
     script.defer = true;
     script.onload = () => {
@@ -160,6 +161,59 @@ export function renderGoogleMap(
       position: { lat: competitor.lat, lng: competitor.lng },
       title: competitor.name,
     });
+  }
+}
+
+/** Renders Google's real WebGL 3D map and live competitor markers. */
+export async function renderGoogle3DMap(
+  api: GoogleMapsApi,
+  element: HTMLElement,
+  mapData: MapData,
+): Promise<boolean> {
+  if (!api.maps.importLibrary) return false;
+  try {
+    const library = await api.maps.importLibrary("maps3d");
+    const Map3DElement = library.Map3DElement as
+      | (new (options: Record<string, unknown>) => HTMLElement)
+      | undefined;
+    const Marker3DElement = library.Marker3DElement as
+      | (new (options: Record<string, unknown>) => HTMLElement)
+      | undefined;
+    if (!Map3DElement || !Marker3DElement) return false;
+    element.replaceChildren();
+    const { lat, lng } = mapData.userLocation;
+    const map = new Map3DElement({
+      center: { lat, lng, altitude: 300 },
+      tilt: 62,
+      heading: 15,
+      range: 2200,
+      mode: "HYBRID",
+      defaultUIHidden: false,
+    });
+    map.style.height = "100%";
+    map.style.width = "100%";
+    map.append(
+      new Marker3DElement({
+        position: { lat, lng, altitude: 20 },
+        label: "You",
+        extruded: true,
+        drawsWhenOccluded: true,
+      }),
+    );
+    for (const competitor of mapData.competitors) {
+      map.append(
+        new Marker3DElement({
+          position: { lat: competitor.lat, lng: competitor.lng, altitude: 10 },
+          label: competitor.name.slice(0, 18),
+          extruded: true,
+          drawsWhenOccluded: true,
+        }),
+      );
+    }
+    element.append(map);
+    return true;
+  } catch {
+    return false;
   }
 }
 

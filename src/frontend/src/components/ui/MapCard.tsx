@@ -5,6 +5,7 @@ import {
   hasGoogleMapsKey,
   loadGoogleMaps,
   renderGoogleMap,
+  renderGoogle3DMap,
 } from "@/lib/map-service";
 import type { Competitor, MapData, Radius } from "@/lib/types";
 import { cn } from "@/lib/utils";
@@ -56,7 +57,10 @@ export function MapCard({
   const [geo, setGeo] = useState<{ lat: number; lng: number } | null>(null);
   const [geoError, setGeoError] = useState<string | null>(null);
   const googleMapRef = useRef<HTMLDivElement>(null);
+  const googleMap3DRef = useRef<HTMLDivElement>(null);
   const [googleMapReady, setGoogleMapReady] = useState(false);
+  const [mapMode, setMapMode] = useState<"2d" | "3d">("2d");
+  const [threeDReady, setThreeDReady] = useState(false);
   const [mapError, setMapError] = useState<string | null>(null);
   const [observedCount, setObservedCount] = useState<number | null>(null);
   const [observedBusinesses, setObservedBusinesses] = useState<Competitor[]>([]);
@@ -139,6 +143,28 @@ export function MapCard({
     };
   }, [mapData, radius, geo, observedBusinesses]);
 
+  useEffect(() => {
+    if (mapMode !== "3d" || !googleMap3DRef.current || !hasGoogleMapsKey()) return;
+    let cancelled = false;
+    const renderedMap = {
+      ...mapData,
+      userLocation: geo ?? mapData.userLocation,
+      competitors: observedBusinesses.length > 0 ? observedBusinesses : mapData.competitors,
+    };
+    void loadGoogleMaps().then(async (api) => {
+      const rendered =
+        api && googleMap3DRef.current
+          ? await renderGoogle3DMap(api, googleMap3DRef.current, renderedMap)
+          : false;
+      if (cancelled) return;
+      setThreeDReady(rendered);
+      if (!rendered) setMapError("3D Maps is unavailable for this browser or Maps API key. Showing the standard map instead.");
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [mapMode, mapData, geo, observedBusinesses]);
+
   const userLocation = geo ?? mapData.userLocation;
   const usingDemoLocation = geo === null;
   const displayedCompetitors =
@@ -190,13 +216,29 @@ export function MapCard({
       </div>
 
       <div className="relative h-56 w-full overflow-hidden bg-muted/40">
+        {hasGoogleMapsKey() ? (
+          <div className="absolute left-3 top-3 z-10 flex rounded-full border border-border bg-background/95 p-0.5 shadow-card">
+            {(["2d", "3d"] as const).map((mode) => (
+              <button
+                key={mode}
+                type="button"
+                onClick={() => setMapMode(mode)}
+                className={cn("rounded-full px-2.5 py-1 text-xs font-semibold", mapMode === mode ? "bg-primary text-primary-foreground" : "text-muted-foreground")}
+                aria-pressed={mapMode === mode}
+              >
+                {mode === "2d" ? "Map" : "3D"}
+              </button>
+            ))}
+          </div>
+        ) : null}
         <div
           ref={googleMapRef}
-          className={cn("h-full w-full", !googleMapReady && "hidden")}
+          className={cn("h-full w-full", (!googleMapReady || mapMode === "3d") && "hidden")}
         />
+        <div ref={googleMap3DRef} className={cn("h-full w-full", (mapMode !== "3d" || !threeDReady) && "hidden")} />
         <svg
           viewBox="0 0 400 240"
-          className={cn("h-full w-full", googleMapReady && "hidden")}
+          className={cn("h-full w-full", ((googleMapReady && mapMode === "2d") || (mapMode === "3d" && threeDReady)) && "hidden")}
           preserveAspectRatio="xMidYMid slice"
           aria-hidden="true"
         >
