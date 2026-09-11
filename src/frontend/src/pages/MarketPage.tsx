@@ -510,6 +510,7 @@ export default function MarketPage() {
           mapData={map}
           radius={analysis.radius}
           onRadiusChange={handleRadiusChange}
+          businessKeyword={analysis.input.category}
         />
       </section>
 

@@ -739,14 +739,13 @@ export default function OnboardingPage() {
       );
       return;
     }
-    setConfirm({
-      type: "detected",
-      entry: {
-        village: address.village,
-        block: address.block ?? "",
-        district: address.district ?? "",
-        state: address.state ?? "",
-      },
+    // Permission has been granted and the address is resolved: fill the
+    // onboarding fields immediately, without requiring another confirmation.
+    confirmLocation({
+      village: address.village,
+      block: address.block ?? "",
+      district: address.district ?? "",
+      state: address.state ?? "",
     });
   };
 

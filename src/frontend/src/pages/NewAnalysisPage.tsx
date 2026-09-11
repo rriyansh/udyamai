@@ -797,6 +797,7 @@ export default function NewAnalysisPage() {
             mapData={current.result.map}
             radius={radius}
             onRadiusChange={handleRadiusChange}
+            businessKeyword={current.input.category}
           />
 
           <MarketReachSection analysis={current} />

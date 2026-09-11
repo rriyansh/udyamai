@@ -73,6 +73,35 @@ function reverseLocationUrl(): string | undefined {
     : `${proxyChatUrl}/location/reverse`;
 }
 
+export interface ObservedBusiness {
+  id: string;
+  name: string;
+  lat: number;
+  lng: number;
+}
+
+export async function findObservedNearbyBusinesses(
+  location: GeoLocation,
+  keyword: string,
+  radiusMeters: number,
+): Promise<ObservedBusiness[] | null> {
+  const url = reverseLocationUrl()?.replace("/location/reverse", "/market/nearby");
+  if (!url || !keyword.trim()) return null;
+  try {
+    const response = await fetch(url, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ ...location, keyword, radiusMeters }),
+      signal: AbortSignal.timeout(15000),
+    });
+    if (!response.ok) return null;
+    const data = (await response.json()) as { results?: ObservedBusiness[] };
+    return Array.isArray(data.results) ? data.results : null;
+  } catch {
+    return null;
+  }
+}
+
 export function hasGoogleMapsKey(): boolean {
   return Boolean(googleMapsKey);
 }

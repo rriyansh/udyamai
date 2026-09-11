@@ -259,6 +259,48 @@ async function reverseLocation(response, payload, origin) {
   }
 }
 
+/**
+ * Free, observed nearby-business lookup using OpenStreetMap's Overpass API.
+ * It reports mapped businesses only; it deliberately does not claim that a
+ * listing count measures customer demand.
+ */
+async function observedNearbyBusinesses(response, payload, origin) {
+  const { lat, lng, radiusMeters, keyword } = payload;
+  if (!Number.isFinite(lat) || !Number.isFinite(lng)) {
+    sendJson(response, 400, { error: "lat and lng are required" }, origin);
+    return;
+  }
+  const radius = Math.min(Math.max(Number(radiusMeters) || 5000, 500), 10000);
+  const term = String(keyword ?? "").replace(/[^\p{L}\p{N}\s&-]/gu, "").trim().slice(0, 80);
+  if (!term) {
+    sendJson(response, 400, { error: "business keyword is required" }, origin);
+    return;
+  }
+  const pattern = term.replace(/[-/\\^$*+?.()|[\]{}]/g, "\\$&").replace(/[-\s]+/g, "[- ]+");
+  const query = `[out:json][timeout:15];nwr["name"~"${pattern}",i](around:${radius},${lat},${lng});out center 25;`;
+  try {
+    const result = await fetch("https://overpass-api.de/api/interpreter", {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: new URLSearchParams({ data: query }),
+    });
+    const data = result.ok ? await result.json() : null;
+    const results = Array.isArray(data?.elements)
+      ? data.elements
+          .map((place) => ({
+            id: String(place.id),
+            name: place.tags?.name ?? term,
+            lat: place.lat ?? place.center?.lat,
+            lng: place.lon ?? place.center?.lon,
+          }))
+          .filter((place) => Number.isFinite(place.lat) && Number.isFinite(place.lng))
+      : [];
+    sendJson(response, 200, { results, source: "OpenStreetMap" }, origin);
+  } catch {
+    sendJson(response, 502, { error: "Nearby business data is unavailable" }, origin);
+  }
+}
+
 const server = http.createServer(async (request, response) => {
   const origin = request.headers.origin;
 
@@ -307,6 +349,11 @@ const server = http.createServer(async (request, response) => {
 
   if (request.url === "/api/location/reverse") {
     await reverseLocation(response, payload, origin);
+    return;
+  }
+
+  if (request.url === "/api/market/nearby") {
+    await observedNearbyBusinesses(response, payload, origin);
     return;
   }
 

@@ -1,6 +1,7 @@
 import { Card } from "@/components/Card";
 import {
   getCurrentLocation,
+  findObservedNearbyBusinesses,
   hasGoogleMapsKey,
   loadGoogleMaps,
   renderGoogleMap,
@@ -16,6 +17,8 @@ interface MapCardProps {
   mapData: MapData;
   radius: Radius;
   onRadiusChange: (radius: Radius) => void;
+  /** User-selected business name/category used for live nearby lookup. */
+  businessKeyword?: string;
   className?: string;
 }
 
@@ -42,6 +45,7 @@ export function MapCard({
   mapData,
   radius,
   onRadiusChange,
+  businessKeyword,
   className,
 }: MapCardProps) {
   const { competitors, reliableDataAvailable } = mapData;
@@ -54,6 +58,7 @@ export function MapCard({
   const googleMapRef = useRef<HTMLDivElement>(null);
   const [googleMapReady, setGoogleMapReady] = useState(false);
   const [mapError, setMapError] = useState<string | null>(null);
+  const [observedCount, setObservedCount] = useState<number | null>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -71,6 +76,21 @@ export function MapCard({
       cancelled = true;
     };
   }, []);
+
+  useEffect(() => {
+    if (!geo || !businessKeyword) return;
+    let cancelled = false;
+    void findObservedNearbyBusinesses(
+      geo,
+      businessKeyword,
+      radius === "5km" ? 5000 : 10000,
+    ).then((businesses) => {
+      if (!cancelled) setObservedCount(businesses?.length ?? null);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [geo, businessKeyword, radius]);
 
   useEffect(() => {
     if (!hasGoogleMapsKey() || !googleMapRef.current) {
@@ -270,6 +290,11 @@ export function MapCard({
         {mapError ? (
           <p className="text-xs text-muted-foreground" data-ocid="map_setup_error">
             {mapError}
+          </p>
+        ) : null}
+        {observedCount !== null ? (
+          <p className="text-xs text-muted-foreground" data-ocid="observed_business_count">
+            OpenStreetMap found {observedCount} mapped {businessKeyword} businesses in this radius. This is observed listing availability, not a claim about customer demand.
           </p>
         ) : null}
 
