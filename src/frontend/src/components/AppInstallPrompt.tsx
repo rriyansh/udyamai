@@ -66,11 +66,6 @@ export function AppInstallPrompt() {
             : "Scan the QR with your phone to get the download link."}
         </p>
       </div>
-      <img
-        src="/assets/images/udyamai-download-qr.jpeg"
-        alt="Scan to get the UdyamAI download link on your phone"
-        className="hidden h-20 w-28 shrink-0 rounded-lg border border-border object-cover object-top sm:block"
-      />
       {deferredPrompt ? (
         <Button type="button" onClick={() => void install()} className="shrink-0 px-3">
           <Download className="size-4" aria-hidden />
@@ -78,7 +73,7 @@ export function AppInstallPrompt() {
         </Button>
       ) : null}
       <a
-        href="https://bucket.appilix.com/app-apk-0cbedcecb12e4887856ef24b9d03a112-1789085173.apk"
+        href="https://bucket.appilix.com/app-apk-6915f91e10c640ffa896ad27138d86e9-1789088791.apk"
         className="inline-flex shrink-0 items-center gap-1.5 rounded-full bg-primary px-3 py-2 text-sm font-medium text-primary-foreground transition-smooth hover:opacity-90"
         data-ocid="direct_download_button"
       >

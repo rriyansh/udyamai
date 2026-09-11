@@ -190,6 +190,7 @@ const STEPS: StepConfig[] = [
     description: "Start typing and choose from the suggestions.",
     kind: "location",
     placeholder: "e.g. Khairagarh",
+    optional: true,
   },
   {
     key: "district",
@@ -995,33 +996,40 @@ export default function OnboardingPage() {
     if (step.kind === "location") {
       return (
         <div className="flex flex-col gap-1.5">
-          {step.key === "village" ? (
+          {step.key === "village" || step.key === "block" ? (
             <div className="flex flex-col gap-2">
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => void handleDetectLocation()}
-                disabled={detecting}
-                className="w-full justify-center sm:w-auto"
-                data-ocid="detect_location_button"
-              >
-                <Compass className="size-4" aria-hidden />
-                {detecting
-                  ? "Detecting your location\u2026"
-                  : "Use my current location"}
-              </Button>
-              {detectError ? (
-                <p
-                  className="text-xs text-muted-foreground"
-                  data-ocid="detect_location_error"
-                >
-                  {detectError}
-                </p>
+              {step.key === "village" ? (
+                <>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => void handleDetectLocation()}
+                    disabled={detecting}
+                    className="w-full justify-center sm:w-auto"
+                    data-ocid="detect_location_button"
+                  >
+                    <Compass className="size-4" aria-hidden />
+                    {detecting
+                      ? "Detecting your location\u2026"
+                      : "Use my current location"}
+                  </Button>
+                  <p className="text-xs text-muted-foreground">
+                    We’ll ask your browser for location permission before using it.
+                  </p>
+                  {detectError ? (
+                    <p
+                      className="text-xs text-muted-foreground"
+                      data-ocid="detect_location_error"
+                    >
+                      {detectError}
+                    </p>
+                  ) : null}
+                </>
               ) : null}
               <button
                 type="button"
                 onClick={() => {
-                  setValue("village", "");
+                  setValue(step.key, "");
                   setActiveSuggestionField(null);
                   setDetectError(null);
                   setError(null);
@@ -1033,9 +1041,9 @@ export default function OnboardingPage() {
                   setStoredStep(nextStep);
                 }}
                 className="self-start text-sm font-medium text-primary underline-offset-4 hover:underline"
-                data-ocid="skip_village_button"
+                data-ocid={`skip_${step.key}_button`}
               >
-                Skip village for now
+                Skip {step.key === "village" ? "village" : "block"} for now
               </button>
             </div>
           ) : null}
