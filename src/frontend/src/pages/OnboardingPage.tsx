@@ -15,6 +15,7 @@ import {
   hasGoogleMapsKey,
   loadGoogleMaps,
   reverseGeocode,
+  reverseGeocodeViaProxy,
 } from "@/lib/map-service";
 import { useOnboardingStore } from "@/lib/onboarding-store";
 import type {
@@ -23,7 +24,7 @@ import type {
   OnboardingProfile,
 } from "@/lib/types";
 import { cn } from "@/lib/utils";
-import type { VoiceLanguage } from "@/lib/voice-service";
+import { createVoiceService, type VoiceLanguage } from "@/lib/voice-service";
 import { useNavigate } from "@tanstack/react-router";
 import {
   ArrowLeft,
@@ -36,7 +37,7 @@ import {
   Search,
   Sparkles,
 } from "lucide-react";
-import { useId, useMemo, useState } from "react";
+import { useEffect, useId, useMemo, useState } from "react";
 
 /* ------------------------------------------------------------------ */
 /* Step configuration                                                  */
@@ -543,6 +544,16 @@ function parseNumber(text: string): number {
   return digits ? Number(digits) : 0;
 }
 
+function categoryFromSpeech(transcript: string) {
+  const query = transcript.trim().toLowerCase();
+  if (!query) return undefined;
+  return BUSINESS_CATEGORIES.find(
+    (category) =>
+      category.name.toLowerCase().includes(query) ||
+      query.includes(category.name.toLowerCase()),
+  );
+}
+
 function NumberField({
   label,
   value,
@@ -622,6 +633,8 @@ export default function OnboardingPage() {
   const [categoryQuery, setCategoryQuery] = useState("");
   const [dismissedLocationSuggestion, setDismissedLocationSuggestion] =
     useState("");
+  const [activeSuggestionField, setActiveSuggestionField] =
+    useState<StepKey | null>(null);
   const [voiceLanguage, setVoiceLanguage] = useState<VoiceLanguage>("en-IN");
   const [detecting, setDetecting] = useState(false);
   const [detectError, setDetectError] = useState<string | null>(null);
@@ -656,14 +669,30 @@ export default function OnboardingPage() {
 
   const suggestions = useMemo(() => {
     if (step.kind !== "location") return [];
+    // Never open a list merely because a previous step populated this field.
+    // Suggestions appear only after the user starts typing in this exact field.
+    if (activeSuggestionField !== step.key) return [];
     const raw = draft[step.key as keyof OnboardingProfile];
     const value = raw === undefined || raw === null ? "" : String(raw);
     if (`${step.key}:${value}` === dismissedLocationSuggestion) return [];
     return uniqueValues(LOCATIONS, step.key as keyof LocationEntry, value);
-  }, [step, draft, dismissedLocationSuggestion]);
+  }, [step, draft, dismissedLocationSuggestion, activeSuggestionField]);
+
+  useEffect(() => {
+    setActiveSuggestionField(null);
+  }, [safeStepIndex]);
+
+  useEffect(() => {
+    if (inputMode !== "talk") return;
+    const service = createVoiceService();
+    const spokenPrompt = `${copy.question} ${copy.description ?? step.description ?? ""}`;
+    service.speak(spokenPrompt, { lang: voiceLanguage });
+    return () => service.stop();
+  }, [inputMode, safeStepIndex, voiceLanguage, copy, step.description]);
 
   const handleSelectSuggestion = (value: string) => {
     setValue(step.key, value);
+    setActiveSuggestionField(null);
     setDismissedLocationSuggestion(`${step.key}:${value}`);
     const matches = matchesFor(
       LOCATIONS,
@@ -682,6 +711,7 @@ export default function OnboardingPage() {
     setValue("block", entry.block);
     setValue("district", entry.district);
     setValue("state", entry.state);
+    setActiveSuggestionField(null);
     setConfirm(null);
   };
 
@@ -694,15 +724,12 @@ export default function OnboardingPage() {
       setDetecting(false);
       return;
     }
-    if (!hasGoogleMapsKey()) {
-      setDetectError(
-        "Location detected, but automatic address lookup needs Google Maps to be configured. Please select your village manually.",
-      );
-      setDetecting(false);
-      return;
+    // Prefer the private server Maps key, then use an optional browser key.
+    let address = await reverseGeocodeViaProxy(result.location);
+    if (!address && hasGoogleMapsKey()) {
+      const api = await loadGoogleMaps();
+      address = api ? await reverseGeocode(api, result.location) : null;
     }
-    const api = await loadGoogleMaps();
-    const address = api ? await reverseGeocode(api, result.location) : null;
     setDetecting(false);
     if (!address?.village) {
       setDetectError(
@@ -819,6 +846,21 @@ export default function OnboardingPage() {
               className="h-11 w-full rounded-full border border-input bg-background pl-11 pr-4 text-sm text-foreground outline-none transition-smooth focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring/30"
               data-ocid="business_search_input"
             />
+            {inputMode === "talk" ? (
+              <VoiceButton
+                onResult={(transcript) => {
+                  setCategoryQuery(transcript);
+                  const category = categoryFromSpeech(transcript);
+                  if (category) {
+                    setValue("category", category.id);
+                    setError(null);
+                  }
+                }}
+                label="Speak business idea"
+                lang={voiceLanguage}
+                className="mt-3 w-full"
+              />
+            ) : null}
           </div>
           <div
             className="grid grid-cols-1 gap-3 sm:grid-cols-2"
@@ -981,7 +1023,10 @@ export default function OnboardingPage() {
           <div className="relative">
             <VoiceInput
               value={getValue(step.key)}
-              onChange={(v) => setValue(step.key, v)}
+              onChange={(v) => {
+                setActiveSuggestionField(step.key);
+                setValue(step.key, v);
+              }}
               label={copy.question}
               placeholder={step.placeholder}
               lang={voiceLanguage}

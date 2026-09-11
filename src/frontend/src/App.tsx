@@ -8,7 +8,9 @@ export default function App() {
     <ThemeProvider>
       <ToastProvider>
         <RouterProvider router={router} />
+        <AppInstallPrompt />
       </ToastProvider>
     </ThemeProvider>
   );
 }
+import { AppInstallPrompt } from "@/components/AppInstallPrompt";

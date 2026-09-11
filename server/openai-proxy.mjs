@@ -216,6 +216,49 @@ async function placesNearby(response, payload, origin) {
   }
 }
 
+/** Resolve browser coordinates on the server so the Maps key stays private. */
+async function reverseLocation(response, payload, origin) {
+  if (!googleMapsKey) {
+    sendJson(response, 503, { error: "Maps service is not configured" }, origin);
+    return;
+  }
+  const { lat, lng } = payload;
+  if (!Number.isFinite(lat) || !Number.isFinite(lng)) {
+    sendJson(response, 400, { error: "lat and lng are required" }, origin);
+    return;
+  }
+
+  const url = new URL("https://maps.googleapis.com/maps/api/geocode/json");
+  url.searchParams.set("latlng", `${lat},${lng}`);
+  url.searchParams.set("key", googleMapsKey);
+  try {
+    const result = await fetch(url);
+    const data = result.ok ? await result.json() : null;
+    const components = data?.results?.[0]?.address_components;
+    if (!Array.isArray(components)) {
+      sendJson(response, 404, { error: "Address could not be resolved" }, origin);
+      return;
+    }
+    const find = (type) =>
+      components.find((component) => component.types?.includes(type))?.long_name;
+    sendJson(
+      response,
+      200,
+      {
+        address: {
+          village: find("locality") ?? find("sublocality") ?? find("postal_town") ?? "",
+          block: find("administrative_area_level_3") ?? "",
+          district: find("administrative_area_level_2") ?? "",
+          state: find("administrative_area_level_1") ?? "",
+        },
+      },
+      origin,
+    );
+  } catch {
+    sendJson(response, 502, { error: "Maps service is temporarily unavailable" }, origin);
+  }
+}
+
 const server = http.createServer(async (request, response) => {
   const origin = request.headers.origin;
 
@@ -259,6 +302,11 @@ const server = http.createServer(async (request, response) => {
 
   if (request.url === "/api/places/nearby") {
     await placesNearby(response, payload, origin);
+    return;
+  }
+
+  if (request.url === "/api/location/reverse") {
+    await reverseLocation(response, payload, origin);
     return;
   }
 

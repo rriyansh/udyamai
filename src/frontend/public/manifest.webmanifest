@@ -1,0 +1,17 @@
+{
+  "name": "UdyamAI",
+  "short_name": "UdyamAI",
+  "description": "AI-powered guidance for rural entrepreneurs.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#4c8d18",
+  "icons": [
+    {
+      "src": "/assets/images/udyamai-logo.jpg",
+      "sizes": "1078x1070",
+      "type": "image/jpeg",
+      "purpose": "any"
+    }
+  ]
+}

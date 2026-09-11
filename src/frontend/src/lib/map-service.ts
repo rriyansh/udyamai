@@ -61,6 +61,16 @@ interface GoogleMapsApi {
 const googleMapsKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY as
   | string
   | undefined;
+const proxyChatUrl = import.meta.env.VITE_OPENAI_PROXY_URL as
+  | string
+  | undefined;
+
+function reverseLocationUrl(): string | undefined {
+  if (!proxyChatUrl) return undefined;
+  return proxyChatUrl.endsWith("/chat")
+    ? `${proxyChatUrl.slice(0, -"/chat".length)}/location/reverse`
+    : `${proxyChatUrl}/location/reverse`;
+}
 
 export function hasGoogleMapsKey(): boolean {
   return Boolean(googleMapsKey);
@@ -123,6 +133,32 @@ export interface ReverseGeocodeResult {
   block?: string;
   district?: string;
   state?: string;
+}
+
+/**
+ * Uses the server proxy to reverse-geocode coordinates. This is preferred
+ * during onboarding because it does not require publishing a Maps key to the
+ * browser. A null response simply lets the UI try the optional browser Maps
+ * integration or ask for manual entry.
+ */
+export async function reverseGeocodeViaProxy(
+  location: GeoLocation,
+): Promise<ReverseGeocodeResult | null> {
+  const url = reverseLocationUrl();
+  if (!url) return null;
+  try {
+    const response = await fetch(url, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(location),
+      signal: AbortSignal.timeout(10000),
+    });
+    if (!response.ok) return null;
+    const data = (await response.json()) as { address?: ReverseGeocodeResult };
+    return data.address?.village ? data.address : null;
+  } catch {
+    return null;
+  }
 }
 
 /**
