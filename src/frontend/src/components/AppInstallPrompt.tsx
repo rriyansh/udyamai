@@ -21,9 +21,10 @@ declare global {
 export function AppInstallPrompt() {
   const [deferredPrompt, setDeferredPrompt] =
     useState<BeforeInstallPromptEvent | null>(null);
-  const [dismissed, setDismissed] = useState(false);
+  const [dismissed, setDismissed] = useState(true);
 
   useEffect(() => {
+    setDismissed(sessionStorage.getItem("udyamai-install-dismissed") === "true");
     const onInstallReady = (event: BeforeInstallPromptEvent) => {
       event.preventDefault();
       setDeferredPrompt(event);
@@ -37,9 +38,10 @@ export function AppInstallPrompt() {
     };
   }, []);
 
-  if (!deferredPrompt || dismissed) return null;
+  if (dismissed) return null;
 
   const install = async () => {
+    if (!deferredPrompt) return;
     await deferredPrompt.prompt();
     await deferredPrompt.userChoice;
     setDeferredPrompt(null);
@@ -47,7 +49,7 @@ export function AppInstallPrompt() {
 
   return (
     <aside
-      className="fixed inset-x-4 bottom-4 z-[60] mx-auto flex max-w-md items-center gap-3 rounded-2xl border border-border bg-card p-3 shadow-elevated"
+      className="fixed inset-x-4 bottom-4 z-[60] mx-auto flex max-w-lg items-center gap-3 rounded-2xl border border-border bg-card p-3 shadow-elevated"
       aria-label="Install UdyamAI app"
       data-ocid="app_install_prompt"
     >
@@ -58,15 +60,29 @@ export function AppInstallPrompt() {
       />
       <div className="min-w-0 flex-1">
         <p className="text-sm font-semibold text-foreground">Install UdyamAI</p>
-        <p className="text-xs text-muted-foreground">Get quick access from your home screen.</p>
+        <p className="text-xs text-muted-foreground">
+          {deferredPrompt
+            ? "Get quick access from your home screen."
+            : "Scan the QR with your phone to get the download link."}
+        </p>
       </div>
-      <Button type="button" onClick={() => void install()} className="shrink-0 px-3">
-        <Download className="size-4" aria-hidden />
-        Install
-      </Button>
+      <img
+        src="/assets/images/udyamai-download-qr.jpeg"
+        alt="Scan to get the UdyamAI download link on your phone"
+        className="hidden h-20 w-28 shrink-0 rounded-lg border border-border object-cover object-top sm:block"
+      />
+      {deferredPrompt ? (
+        <Button type="button" onClick={() => void install()} className="shrink-0 px-3">
+          <Download className="size-4" aria-hidden />
+          Install
+        </Button>
+      ) : null}
       <button
         type="button"
-        onClick={() => setDismissed(true)}
+        onClick={() => {
+          sessionStorage.setItem("udyamai-install-dismissed", "true");
+          setDismissed(true);
+        }}
         className="shrink-0 rounded-full p-1 text-muted-foreground hover:bg-muted hover:text-foreground"
         aria-label="Dismiss install prompt"
       >
