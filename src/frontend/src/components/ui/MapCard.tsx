@@ -6,7 +6,7 @@ import {
   loadGoogleMaps,
   renderGoogleMap,
 } from "@/lib/map-service";
-import type { MapData, Radius } from "@/lib/types";
+import type { Competitor, MapData, Radius } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import { MapPin, Navigation } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
@@ -59,6 +59,7 @@ export function MapCard({
   const [googleMapReady, setGoogleMapReady] = useState(false);
   const [mapError, setMapError] = useState<string | null>(null);
   const [observedCount, setObservedCount] = useState<number | null>(null);
+  const [observedBusinesses, setObservedBusinesses] = useState<Competitor[]>([]);
 
   useEffect(() => {
     let cancelled = false;
@@ -85,7 +86,20 @@ export function MapCard({
       businessKeyword,
       radius === "5km" ? 5000 : 10000,
     ).then((businesses) => {
-      if (!cancelled) setObservedCount(businesses?.length ?? null);
+      if (cancelled) return;
+      setObservedCount(businesses?.length ?? null);
+      setObservedBusinesses(
+        (businesses ?? []).map((business, index) => ({
+          id: Number.parseInt(business.id, 10) || index + 1,
+          name: business.name,
+          lat: business.lat,
+          lng: business.lng,
+          distanceKm: 0,
+          priceRangeMin: 0,
+          priceRangeMax: 0,
+          priceRangeAvg: 0,
+        })),
+      );
     });
     return () => {
       cancelled = true;
@@ -103,7 +117,14 @@ export function MapCard({
         renderGoogleMap(
           api,
           googleMapRef.current,
-          { ...mapData, userLocation: geo ?? mapData.userLocation },
+          {
+            ...mapData,
+            userLocation: geo ?? mapData.userLocation,
+            competitors:
+              observedBusinesses.length > 0
+                ? observedBusinesses
+                : mapData.competitors,
+          },
           radius === "5km" ? 5 : 10,
         );
         setGoogleMapReady(true);
@@ -116,10 +137,12 @@ export function MapCard({
     return () => {
       cancelled = true;
     };
-  }, [mapData, radius, geo]);
+  }, [mapData, radius, geo, observedBusinesses]);
 
   const userLocation = geo ?? mapData.userLocation;
   const usingDemoLocation = geo === null;
+  const displayedCompetitors =
+    observedBusinesses.length > 0 ? observedBusinesses : competitors;
 
   // Position the user marker from the resolved location. The engine's
   // fallback (23.2, 77.4) maps to the centre of the viewBox.
@@ -224,11 +247,15 @@ export function MapCard({
             opacity="0.25"
           />
           {/* competitor markers */}
-          {competitors.map((c, i) => {
-            const x = 120 + ((i * 73) % 200);
-            const y = 60 + ((i * 47) % 120);
+          {displayedCompetitors.map((c, i) => {
+            const x = observedBusinesses.length
+              ? Math.max(25, Math.min(375, 200 + (c.lng - userLocation.lng) * 9000))
+              : 120 + ((i * 73) % 200);
+            const y = observedBusinesses.length
+              ? Math.max(25, Math.min(215, 120 - (c.lat - userLocation.lat) * 9000))
+              : 60 + ((i * 47) % 120);
             return (
-              <g key={c.id}>
+              <g key={`${c.id}-${i}`}>
                 <circle cx={x} cy={y} r="5" fill="var(--map-marker)" />
                 <circle
                   cx={x}
@@ -294,7 +321,7 @@ export function MapCard({
         ) : null}
         {observedCount !== null ? (
           <p className="text-xs text-muted-foreground" data-ocid="observed_business_count">
-            OpenStreetMap found {observedCount} mapped {businessKeyword} businesses in this radius. This is observed listing availability, not a claim about customer demand.
+            OpenStreetMap found {observedCount} mapped {businessKeyword} businesses in this radius; their locations are marked on the map. This is observed listing availability, not a claim about customer demand.
           </p>
         ) : null}
 
