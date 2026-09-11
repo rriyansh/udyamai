@@ -1,5 +1,5 @@
 import { Button } from "@/components/Button";
-import { Download, X } from "lucide-react";
+import { Download } from "lucide-react";
 import { useEffect, useState } from "react";
 
 interface BeforeInstallPromptEvent extends Event {
@@ -14,17 +14,13 @@ declare global {
 }
 
 /**
- * First-visit PWA invitation. Browsers require the actual install dialog to
- * be opened from a user action, so this presents a branded button when the
- * browser says installation is available.
+ * Persistent download notification. It always keeps the direct Android APK
+ * available, while supported browsers can additionally use native install.
  */
 export function AppInstallPrompt() {
   const [deferredPrompt, setDeferredPrompt] =
     useState<BeforeInstallPromptEvent | null>(null);
-  const [dismissed, setDismissed] = useState(true);
-
   useEffect(() => {
-    setDismissed(sessionStorage.getItem("udyamai-install-dismissed") === "true");
     const onInstallReady = (event: BeforeInstallPromptEvent) => {
       event.preventDefault();
       setDeferredPrompt(event);
@@ -37,8 +33,6 @@ export function AppInstallPrompt() {
       window.removeEventListener("appinstalled", onInstalled);
     };
   }, []);
-
-  if (dismissed) return null;
 
   const install = async () => {
     if (!deferredPrompt) return;
@@ -63,7 +57,7 @@ export function AppInstallPrompt() {
         <p className="text-xs text-muted-foreground">
           {deferredPrompt
             ? "Get quick access from your home screen."
-            : "Scan the QR with your phone to get the download link."}
+            : "Download the UdyamAI Android app anytime."}
         </p>
       </div>
       {deferredPrompt ? (
@@ -80,17 +74,6 @@ export function AppInstallPrompt() {
         <Download className="size-4" aria-hidden />
         Download UdyamAI
       </a>
-      <button
-        type="button"
-        onClick={() => {
-          sessionStorage.setItem("udyamai-install-dismissed", "true");
-          setDismissed(true);
-        }}
-        className="shrink-0 rounded-full p-1 text-muted-foreground hover:bg-muted hover:text-foreground"
-        aria-label="Dismiss install prompt"
-      >
-        <X className="size-4" aria-hidden />
-      </button>
     </aside>
   );
 }
