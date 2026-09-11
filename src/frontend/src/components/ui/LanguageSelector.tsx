@@ -8,8 +8,29 @@ export interface LanguageOption {
 
 export const VOICE_LANGUAGE_OPTIONS: LanguageOption[] = [
   { value: "en-IN", label: "English" },
-  { value: "hi-IN", label: "Hindi" },
   { value: "hinglish", label: "Hinglish" },
+  { value: "as-IN", label: "Assamese" },
+  { value: "bn-IN", label: "Bengali" },
+  { value: "brx-IN", label: "Bodo" },
+  { value: "doi-IN", label: "Dogri" },
+  { value: "gu-IN", label: "Gujarati" },
+  { value: "hi-IN", label: "Hindi" },
+  { value: "kn-IN", label: "Kannada" },
+  { value: "ks-IN", label: "Kashmiri" },
+  { value: "kok-IN", label: "Konkani" },
+  { value: "mai-IN", label: "Maithili" },
+  { value: "ml-IN", label: "Malayalam" },
+  { value: "mni-IN", label: "Manipuri" },
+  { value: "mr-IN", label: "Marathi" },
+  { value: "ne-IN", label: "Nepali" },
+  { value: "or-IN", label: "Odia" },
+  { value: "pa-IN", label: "Punjabi" },
+  { value: "sa-IN", label: "Sanskrit" },
+  { value: "sat-IN", label: "Santali" },
+  { value: "sd-IN", label: "Sindhi" },
+  { value: "ta-IN", label: "Tamil" },
+  { value: "te-IN", label: "Telugu" },
+  { value: "ur-IN", label: "Urdu" },
 ];
 
 interface LanguageSelectorProps {

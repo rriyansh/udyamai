@@ -8,7 +8,32 @@
  * into the standard ₹1,00,000 format via Intl.NumberFormat('en-IN').
  */
 
-export type VoiceLanguage = "en-IN" | "hi-IN" | "hinglish";
+/** Indian languages supported by the browser's speech recognition/TTS APIs. */
+export type VoiceLanguage =
+  | "as-IN"
+  | "bn-IN"
+  | "brx-IN"
+  | "doi-IN"
+  | "gu-IN"
+  | "hi-IN"
+  | "kn-IN"
+  | "ks-IN"
+  | "kok-IN"
+  | "mai-IN"
+  | "ml-IN"
+  | "mni-IN"
+  | "mr-IN"
+  | "ne-IN"
+  | "or-IN"
+  | "pa-IN"
+  | "sa-IN"
+  | "sat-IN"
+  | "sd-IN"
+  | "ta-IN"
+  | "te-IN"
+  | "ur-IN"
+  | "en-IN"
+  | "hinglish";
 
 export interface VoiceService {
   supported: boolean;

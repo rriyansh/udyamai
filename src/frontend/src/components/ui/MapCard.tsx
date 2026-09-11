@@ -53,6 +53,7 @@ export function MapCard({
   const [geoError, setGeoError] = useState<string | null>(null);
   const googleMapRef = useRef<HTMLDivElement>(null);
   const [googleMapReady, setGoogleMapReady] = useState(false);
+  const [mapError, setMapError] = useState<string | null>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -72,23 +73,30 @@ export function MapCard({
   }, []);
 
   useEffect(() => {
-    if (!hasGoogleMapsKey() || !googleMapRef.current) return;
+    if (!hasGoogleMapsKey() || !googleMapRef.current) {
+      setMapError("Add VITE_GOOGLE_MAPS_API_KEY to show the live Google map.");
+      return;
+    }
     let cancelled = false;
     void loadGoogleMaps().then((api) => {
       if (!cancelled && api && googleMapRef.current) {
         renderGoogleMap(
           api,
           googleMapRef.current,
-          mapData,
+          { ...mapData, userLocation: geo ?? mapData.userLocation },
           radius === "5km" ? 5 : 10,
         );
         setGoogleMapReady(true);
+        setMapError(null);
+      } else if (!cancelled) {
+        setGoogleMapReady(false);
+        setMapError("Google Maps could not load. Check the API key and Maps JavaScript API.");
       }
     });
     return () => {
       cancelled = true;
     };
-  }, [mapData, radius]);
+  }, [mapData, radius, geo]);
 
   const userLocation = geo ?? mapData.userLocation;
   const usingDemoLocation = geo === null;
@@ -259,6 +267,11 @@ export function MapCard({
             <span>Avg distance {mapData.averageDistance} km</span>
           </div>
         )}
+        {mapError ? (
+          <p className="text-xs text-muted-foreground" data-ocid="map_setup_error">
+            {mapError}
+          </p>
+        ) : null}
 
         <div className="flex flex-wrap items-center gap-3">
           <span className="text-xs font-medium text-muted-foreground">

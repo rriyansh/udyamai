@@ -61,6 +61,7 @@ interface GoogleMapsApi {
 const googleMapsKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY as
   | string
   | undefined;
+let googleMapsLoadPromise: Promise<GoogleMapsApi | null> | null = null;
 const proxyChatUrl = import.meta.env.VITE_OPENAI_PROXY_URL as
   | string
   | undefined;
@@ -84,18 +85,23 @@ export function loadGoogleMaps(): Promise<GoogleMapsApi | null> {
   const existing = (window as Window & { google?: GoogleMapsApi }).google;
   if (existing?.maps) return Promise.resolve(existing);
 
-  return new Promise((resolve) => {
+  if (googleMapsLoadPromise) return googleMapsLoadPromise;
+  googleMapsLoadPromise = new Promise((resolve) => {
     const script = document.createElement("script");
-    script.src = `https://maps.googleapis.com/maps/api/js?key=${encodeURIComponent(googleMapsKey)}`;
+    script.src = `https://maps.googleapis.com/maps/api/js?key=${encodeURIComponent(googleMapsKey)}&v=weekly`;
     script.async = true;
     script.defer = true;
     script.onload = () => {
       const google = (window as Window & { google?: GoogleMapsApi }).google;
       resolve(google?.maps ? google : null);
     };
-    script.onerror = () => resolve(null);
+    script.onerror = () => {
+      googleMapsLoadPromise = null;
+      resolve(null);
+    };
     document.head.appendChild(script);
   });
+  return googleMapsLoadPromise;
 }
 
 export function renderGoogleMap(

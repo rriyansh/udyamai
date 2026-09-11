@@ -7,6 +7,7 @@ import { Modal } from "@/components/ui/Modal";
 import { ProgressSteps } from "@/components/ui/ProgressSteps";
 import { VoiceButton } from "@/components/ui/VoiceButton";
 import { VoiceInput } from "@/components/ui/VoiceInput";
+import { VOICE_LANGUAGE_OPTIONS } from "@/components/ui/LanguageSelector";
 import { WhyButton } from "@/components/ui/WhyButton";
 import { estimateCategoryOutlook } from "@/lib/analysis-engine";
 import { BUSINESS_CATEGORIES } from "@/lib/demo-data";
@@ -60,10 +61,10 @@ type StepKey =
 
 type StepKind = "text" | "number" | "category" | "location" | "choice";
 
-const VOICE_COPY: Record<
+const VOICE_COPY: Partial<Record<
   VoiceLanguage,
   Partial<Record<StepKey, { question: string; description?: string }>>
-> = {
+>> = {
   "en-IN": {},
   "hi-IN": {
     name: {
@@ -651,7 +652,7 @@ export default function OnboardingPage() {
   const safeStepIndex = Math.min(stepIndex, activeSteps.length - 1);
   const step = activeSteps[safeStepIndex];
   const isLast = safeStepIndex === activeSteps.length - 1;
-  const copy = VOICE_COPY[voiceLanguage][step.key] ?? step;
+  const copy = VOICE_COPY[voiceLanguage]?.[step.key] ?? step;
 
   const stepLabels = useMemo(
     () => activeSteps.map((s) => s.label),
@@ -830,7 +831,7 @@ export default function OnboardingPage() {
               cat.name.toLowerCase().includes(query) ||
               cat.description.toLowerCase().includes(query),
           )
-        : BUSINESS_CATEGORIES;
+        : BUSINESS_CATEGORIES.slice(0, 8);
       return (
         <div className="space-y-4">
           <div className="relative">
@@ -939,9 +940,22 @@ export default function OnboardingPage() {
               );
             })}
           </div>
+          {query && categories.length === 0 ? (
+            <button
+              type="button"
+              onClick={() => {
+                setValue("category", categoryQuery.trim());
+                setError(null);
+              }}
+              className="w-full rounded-2xl border border-primary/30 bg-primary/5 px-4 py-3 text-left text-sm font-medium text-foreground transition-smooth hover:bg-primary/10"
+              data-ocid="custom_business_category_button"
+            >
+              Use “{categoryQuery.trim()}” as my business idea
+            </button>
+          ) : null}
           {categories.length === 0 ? (
             <p className="rounded-2xl border border-dashed border-border p-4 text-center text-sm text-muted-foreground">
-              No matching business ideas found. Try another word.
+              No preset match found. You can add your own business idea above.
             </p>
           ) : null}
         </div>
@@ -1180,9 +1194,11 @@ export default function OnboardingPage() {
             className="h-10 min-w-0 flex-1 rounded-full border border-input bg-background px-3 text-sm text-foreground outline-none focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring/30 sm:flex-none"
             data-ocid="onboarding_voice_language"
           >
-            <option value="en-IN">English</option>
-            <option value="hinglish">Hinglish</option>
-            <option value="hi-IN">Hindi</option>
+            {VOICE_LANGUAGE_OPTIONS.map((language) => (
+              <option key={language.value} value={language.value}>
+                {language.label}
+              </option>
+            ))}
           </select>
         </div>
 

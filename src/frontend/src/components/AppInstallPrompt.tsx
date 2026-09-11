@@ -1,5 +1,5 @@
 import { Button } from "@/components/Button";
-import { Download } from "lucide-react";
+import { Download, X } from "lucide-react";
 import { useEffect, useState } from "react";
 
 interface BeforeInstallPromptEvent extends Event {
@@ -20,6 +20,7 @@ declare global {
 export function AppInstallPrompt() {
   const [deferredPrompt, setDeferredPrompt] =
     useState<BeforeInstallPromptEvent | null>(null);
+  const [dismissed, setDismissed] = useState(false);
   useEffect(() => {
     const onInstallReady = (event: BeforeInstallPromptEvent) => {
       event.preventDefault();
@@ -40,6 +41,8 @@ export function AppInstallPrompt() {
     await deferredPrompt.userChoice;
     setDeferredPrompt(null);
   };
+
+  if (dismissed) return null;
 
   return (
     <aside
@@ -74,6 +77,15 @@ export function AppInstallPrompt() {
         <Download className="size-4" aria-hidden />
         Download UdyamAI
       </a>
+      <button
+        type="button"
+        onClick={() => setDismissed(true)}
+        className="shrink-0 rounded-full p-1 text-muted-foreground transition-smooth hover:bg-muted hover:text-foreground"
+        aria-label="Hide download notification"
+        data-ocid="dismiss_download_notification"
+      >
+        <X className="size-4" aria-hidden />
+      </button>
     </aside>
   );
 }
