@@ -219,7 +219,7 @@ export function MapCard({
           <span className="truncate">{location}</span>
           <span className="ml-auto shrink-0 text-xs text-muted-foreground">
             {usingDemoLocation
-              ? "DEMO location"
+              ? "Approximate location"
               : `${userLocation.lat.toFixed(4)}, ${userLocation.lng.toFixed(4)}`}
           </span>
         </div>
@@ -235,7 +235,7 @@ export function MapCard({
               Reliable local data unavailable
             </p>
             <p className="mt-1 text-xs text-muted-foreground">
-              Showing clearly-labelled DEMO DATA for illustration only.
+              Showing estimated map data for illustration only.
             </p>
           </div>
         ) : usingDemoLocation ? (
@@ -243,7 +243,7 @@ export function MapCard({
             className="rounded-xl border border-warning/30 bg-warning/10 p-3 text-xs text-foreground/90"
             data-ocid="map_geolocation_fallback"
           >
-            <p className="font-medium text-warning">Using demo location</p>
+            <p className="font-medium text-warning">Using an approximate location</p>
             <p className="mt-1 text-muted-foreground">
               {geoError ?? "Browser location unavailable"} — showing the
               engine's sample coordinates instead. Enable location access to

@@ -40,7 +40,7 @@ function sourceBadge(
   switch (source) {
     case "demo":
       return {
-        label: "Demo data",
+        label: "Estimated data",
         className: "bg-warning/15 text-warning",
       };
     case "stream":

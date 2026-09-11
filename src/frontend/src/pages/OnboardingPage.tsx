@@ -1018,6 +1018,25 @@ export default function OnboardingPage() {
                   {detectError}
                 </p>
               ) : null}
+              <button
+                type="button"
+                onClick={() => {
+                  setValue("village", "");
+                  setActiveSuggestionField(null);
+                  setDetectError(null);
+                  setError(null);
+                  const nextStep = Math.min(
+                    stepIndex + 1,
+                    activeSteps.length - 1,
+                  );
+                  setStepIndex(nextStep);
+                  setStoredStep(nextStep);
+                }}
+                className="self-start text-sm font-medium text-primary underline-offset-4 hover:underline"
+                data-ocid="skip_village_button"
+              >
+                Skip village for now
+              </button>
             </div>
           ) : null}
           <div className="relative">

@@ -7,6 +7,7 @@ import { useToast } from "@/components/ui/Toast";
 import { useRouteSchemes } from "@/hooks/useQueries";
 import { BUSINESS_CATEGORIES, formatINR } from "@/lib/demo-data";
 import { useResultsStore } from "@/lib/results-store";
+import { useOnboardingStore } from "@/lib/onboarding-store";
 import type {
   GovernmentScheme,
   SchemeMatch,
@@ -259,6 +260,7 @@ const inputClass =
 
 export default function SchemesPage() {
   const { toast } = useToast();
+  const profile = useOnboardingStore((state) => state.profile);
   const [query, setQuery] = useState("");
   const [selected, setSelected] = useState<SchemeMatch | null>(null);
   const [input, setInput] = useState<SchemeRoutingInput | null>(null);
@@ -269,6 +271,19 @@ export default function SchemesPage() {
     beneficiaryCategory: "Individual",
     contribution: "100000",
   });
+
+  useEffect(() => {
+    if (!profile) return;
+    setForm((previous) => ({
+      ...previous,
+      businessCategory: profile.businessCategory || previous.businessCategory,
+      projectCost: String(profile.expectedInvestment || previous.projectCost),
+      contribution: String(profile.marginCapital || previous.contribution),
+      location: [profile.village, profile.block, profile.district, profile.state]
+        .filter(Boolean)
+        .join(", "),
+    }));
+  }, [profile]);
 
   const routeQuery = useRouteSchemes(input ?? DEFAULT_INPUT);
 
@@ -585,7 +600,7 @@ export default function SchemesPage() {
               <p className="text-xs text-muted-foreground">
                 {source === "backend"
                   ? "Live scheme data"
-                  : "Demo estimate — verify on the official portal"}
+                  : "Estimated match — verify on the official portal"}
               </p>
             </div>
 

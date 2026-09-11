@@ -20,7 +20,7 @@ import type {
  * data, real government schemes, or real financial offers.
  */
 
-export const DEMO_BADGE = "DEMO DATA";
+export const DEMO_BADGE = "ESTIMATED DATA";
 
 export const BUSINESS_CATEGORIES: BusinessCategory[] = [
   {

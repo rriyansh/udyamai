@@ -152,7 +152,7 @@ export default function LandingPage() {
                   onClick={handleGetStarted}
                   data-ocid="get_started_button"
                 >
-                  Start Simulation
+                  Let’s Start
                   <ArrowRight className="size-4" aria-hidden />
                 </Button>
                 <Button

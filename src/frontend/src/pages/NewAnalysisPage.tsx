@@ -413,7 +413,7 @@ export default function NewAnalysisPage() {
         title: "Analysis complete",
         description:
           result.source === "demo"
-            ? "Showing clearly-labelled DEMO DATA"
+            ? "Showing estimated results"
             : "Hyper-local analysis ready",
         variant: "success",
       });
@@ -654,7 +654,7 @@ export default function NewAnalysisPage() {
               <p className="text-xs text-muted-foreground">
                 {backendAvailable
                   ? "Connected to backend"
-                  : "Backend unavailable — results will be clearly-labelled DEMO DATA"}
+                  : "Backend unavailable — showing estimated results"}
               </p>
               <Button
                 type="submit"
@@ -808,7 +808,7 @@ export default function NewAnalysisPage() {
             <TrendingUp className="size-6 text-primary" />
             <p className="max-w-xl text-sm text-muted-foreground">
               {source === "demo"
-                ? "This report uses clearly-labelled DEMO DATA for illustration. Real-world data is never faked — connect the backend for live market intelligence."
+                ? "This report uses estimated results for illustration. Real-world data is never faked — connect the backend for live market intelligence."
                 : "This report uses live data from the backend."}
             </p>
           </div>

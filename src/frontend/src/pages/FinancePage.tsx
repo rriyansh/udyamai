@@ -28,6 +28,7 @@ import { formatINR } from "@/lib/demo-data";
 import { computeFinancialPlan } from "@/lib/finance-engine";
 import { SIH_FINANCIAL_RULES } from "@/lib/financial-rules";
 import { useResultsStore } from "@/lib/results-store";
+import { useOnboardingStore } from "@/lib/onboarding-store";
 import type {
   FeasibilityScore,
   FinanceInput,
@@ -179,6 +180,7 @@ function FinanceSkeleton() {
 /* ------------------------------------------------------------------ */
 
 export default function FinancePage() {
+  const profile = useOnboardingStore((state) => state.profile);
   const [input, setInput] = useState<FinanceInput>(DEFAULT_INPUT);
   const [rule, setRule] = useState(SIH_FINANCIAL_RULES[0]);
   const [status, setStatus] = useState<"loading" | "ready" | "error">(
@@ -190,6 +192,36 @@ export default function FinancePage() {
   useEffect(() => {
     setStatus("ready");
   }, []);
+
+  // Start each plan with the figures collected during onboarding. Users can
+  // still adjust any value below before comparing finance options.
+  useEffect(() => {
+    if (!profile) return;
+    const projectCost = profile.expectedInvestment || DEFAULT_INPUT.proposedProjectCost;
+    const ownCapital = Math.min(
+      profile.marginCapital || DEFAULT_INPUT.ownCapital,
+      projectCost,
+    );
+    const monthlySales = profile.expectedMonthlySales || 0;
+    setInput((previous) => ({
+      ...previous,
+      proposedProjectCost: projectCost,
+      ownCapital,
+      loanRequirement:
+        profile.expectedLoanRequirement || Math.max(projectCost - ownCapital, 0),
+      marginPercent: projectCost > 0 ? Math.round((ownCapital / projectCost) * 100) : 0,
+      operatingCosts: {
+        ...previous.operatingCosts,
+        rawMaterial: monthlySales ? Math.round(monthlySales * 0.35) : previous.operatingCosts.rawMaterial,
+      },
+      workingCapital: {
+        ...previous.workingCapital,
+        monthlyRequirement: monthlySales
+          ? Math.round(monthlySales * 0.2)
+          : previous.workingCapital.monthlyRequirement,
+      },
+    }));
+  }, [profile]);
 
   const { data: planResult } = useFinancialPlan(input, rule.rule);
 

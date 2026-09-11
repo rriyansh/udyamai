@@ -77,6 +77,14 @@ export function AppInstallPrompt() {
           Install
         </Button>
       ) : null}
+      <a
+        href="https://bucket.appilix.com/app-apk-0cbedcecb12e4887856ef24b9d03a112-1789085173.apk"
+        className="inline-flex shrink-0 items-center gap-1.5 rounded-full bg-primary px-3 py-2 text-sm font-medium text-primary-foreground transition-smooth hover:opacity-90"
+        data-ocid="direct_download_button"
+      >
+        <Download className="size-4" aria-hidden />
+        Download UdyamAI
+      </a>
       <button
         type="button"
         onClick={() => {
